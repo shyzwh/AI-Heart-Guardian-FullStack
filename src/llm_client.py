@@ -221,22 +221,32 @@ def polish_report_with_glm(report_text, api_key=None, model="glm-4-flash-250414"
             abnormal_lines.append(line.strip().lstrip("- "))
     abnormal_features = "；".join(abnormal_lines) or "未发现需要特别强调的异常特征"
     advice = report.split("综合建议：", 1)[-1].strip() if "综合建议：" in report else report
+    # 新的提示词：面向患者的通俗润色，严格控制字数和内容要点
     prompt = (
-        "请把以下内容润色为更通俗的版本，分4段：风险结论/病因分析/生活建议/医生话术。"
-        "每段30-80字，总字数200-350字。保留异常特征的名称、数值和判定，以及原始建议中的实质内容。"
-        "不要罗列全部12项特征，只讲异常项；不要输出空泛的‘请结合具体参数评估’，不要重复罗列特征数值。\n\n"
-        f"风险等级：{risk_level}\n"
-        f"异常特征：{abnormal_features}\n"
-        f"原始建议：{advice}\n"
-        f"患者自述症状：{symptoms or '未提供'}\n"
-        "如果症状不为空，请在病因分析或医生话术中结合症状说明；如果症状为空，按心电数据和原始建议分析，不要虚构症状。"
+        f"原始报告：\n{report}\n\n"
+        "请按以下要求把上面的专业报告转化为患者能听懂的通俗版本：\n"
+        "要求：\n"
+        "- 不要重复12项特征数值\n"
+        "- 只讲最关键的1-2个发现\n"
+        "- 用生活化的语言解释\n"
+        "- 给出具体可执行的建议\n"
+        "- 总字数200-300字\n\n"
+        f"（可参考信息：风险等级：{risk_level}；异常特征：{abnormal_features}；患者自述症状：{symptoms or '未提供'}）\n"
     )
     return _call_glm_api(
         prompt,
         model_name=model,
         api_key=api_key,
         base_url=base_url,
-        system_prompt="你是心内科医生助手。请把以下报告润色为更通俗的版本。",
+        system_prompt=(
+            "你是心内科医生助手。请把以下专业报告转化为患者能听懂的通俗版本。"
+            "要求：\n"
+            "- 不要重复12项特征数值\n"
+            "- 只讲最关键的1-2个发现\n"
+            "- 用生活化的语言解释\n"
+            "- 给出具体可执行的建议\n"
+            "- 总字数200-300字"
+        ),
     )
 
 

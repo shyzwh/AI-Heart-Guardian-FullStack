@@ -55,7 +55,7 @@ def init_state():
         "patient_history": [],
         "patient_medication": "",
         "selected_history_patient": None,
-        "polished_report": "",
+        "ai_polished_report": None,
         "ai_diagnosis": None,
         "rag_answer": "",
         "use_custom_api": False,

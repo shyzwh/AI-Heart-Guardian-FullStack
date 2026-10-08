@@ -27,7 +27,7 @@
   "qtc_threshold_female": 460,
   "qtc_threshold_default": 450,
   "qtc_threshold_mild_high": 500,
-  "theme": "医疗蓝",
+  "theme": "纯白极简",
   "default_sex": "未指定",
   "llm_enabled": false,
   "llm_provider": "OpenAI 兼容接口",

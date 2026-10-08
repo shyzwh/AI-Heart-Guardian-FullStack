@@ -15,54 +15,92 @@ def _icon_html(icon):
 
 def inject_global_css(theme="医疗蓝"):
     THEMES = {
-        "医疗蓝": {"primary": "#1A5CFF", "bg": "#F5F7FA"},
-        "清新绿": {"primary": "#10B981", "bg": "#F0FDF4"},
-        "暖阳橙": {"primary": "#F59E0B", "bg": "#FFFBEB"},
+        "医疗蓝": {
+            "primary": "#1A5CFF",
+            "bg": "#F5F7FA",
+            "card": "#FFFFFF",
+            "text": "#18324F",
+            "border": "#DCE4EF",
+            "heading": "#0B2D7A",
+            "muted": "#667085",
+            "shadow": "rgba(23, 77, 155, 0.10)",
+            "color_scheme": "light",
+        },
+        "纯白极简": {
+            "primary": "#333333",
+            "bg": "#FFFFFF",
+            "card": "#FFFFFF",
+            "text": "#333333",
+            "border": "#E5E5E5",
+            "heading": "#333333",
+            "muted": "#707070",
+            "shadow": "rgba(0, 0, 0, 0.06)",
+            "color_scheme": "light",
+        },
+        "深色护眼": {
+            "primary": "#4A9EFF",
+            "bg": "#1E232B",
+            "card": "#292F38",
+            "text": "#E6EDF5",
+            "border": "#414B58",
+            "heading": "#B8D8FF",
+            "muted": "#A5B1C0",
+            "shadow": "rgba(0, 0, 0, 0.24)",
+            "color_scheme": "dark",
+        },
+        "磨砂灰": {
+            "primary": "#5C6B7A",
+            "bg": "#EEF1F4",
+            "card": "#F8FAFC",
+            "text": "#26323D",
+            "border": "#D5DDE4",
+            "heading": "#3C4B59",
+            "muted": "#66727D",
+            "shadow": "rgba(44, 62, 80, 0.08)",
+            "color_scheme": "light",
+        },
     }
     t = THEMES.get(theme, THEMES["医疗蓝"])
     st.markdown(
         f"""
         <style>
-        /* 隐藏 Streamlit 默认元素，保留 header 容器和侧边栏展开能力 */
-        #MainMenu {{ visibility: hidden; }}
-        footer {{ visibility: hidden; }}
-        [data-testid="stToolbar"] {{ visibility: hidden; }}
-        [data-testid="stDecoration"] {{ visibility: hidden; }}
-        [data-testid="stStatusWidget"] {{ visibility: hidden; }}
-        .stDeployButton {{ display: none; }}
-        [data-testid="stAppDeployButton"] {{ display: none; }}
-
-        /* 定义医疗蓝色系与通用主题颜色 */
         :root {{
             --primary-color: {t['primary']};
             --bg-color: {t['bg']};
+            --card-bg: {t['card']};
+            --text-color: {t['text']};
+            --border-color: {t['border']};
+            --heading-color: {t['heading']};
+            --muted-color: {t['muted']};
+            --shadow-color: {t['shadow']};
+            --background-color: var(--bg-color);
+            --secondary-background-color: var(--card-bg);
+            color-scheme: {t['color_scheme']};
             --medical-blue: var(--primary-color);
-            --medical-deep: #0b2d7a;
-            --medical-soft: #edf5ff;
-            --glass-bg: rgba(255,255,255,0.72);
-            --glass-border: rgba(255,255,255,0.9);
-            --text: #18324f;
-            --muted: #667085;
+            --medical-deep: var(--heading-color);
+            --medical-soft: color-mix(in srgb, var(--primary-color) 9%, var(--card-bg));
+            --glass-bg: color-mix(in srgb, var(--card-bg) 88%, transparent);
+            --glass-border: color-mix(in srgb, var(--border-color) 75%, transparent);
+            --text: var(--text-color);
+            --muted: var(--muted-color);
             --success: #2ecc71;
             --warning: #f39c12;
             --danger: #e74c3c;
-            --shadow: 0 12px 28px rgba(23, 77, 155, 0.12);
+            --shadow: 0 12px 28px var(--shadow-color);
         }}
         html, body, [data-testid="stAppViewContainer"] {{
-            background: linear-gradient(135deg, var(--bg-color) 0%, #ffffff 48%, var(--bg-color) 100%);
-            color: var(--text);
+            background: var(--bg-color);
+            color: var(--text-color);
             font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
         }}
         [data-testid="stAppViewContainer"] > .main {{ background: transparent; }}
-        [data-testid="stSidebar"] {{ background: linear-gradient(180deg, var(--primary-color) 0%, #0a4aad 100%); }}
-        [data-testid="stSidebar"] * {{ color: white; }}
-        /* 定义毛玻璃卡片样式 */
+        [data-testid="stAppViewContainer"] main {{ color: var(--text-color); }}
         .glass-panel {{
             background: var(--glass-bg);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
-            border-radius: 18px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             padding: 1rem 1.1rem;
             margin-bottom: 1rem;
@@ -71,11 +109,10 @@ def inject_global_css(theme="医疗蓝"):
         }}
         .glass-panel:hover {{
             transform: translateY(-2px);
-            box-shadow: 0 18px 35px rgba(15, 90, 170, 0.16);
+            box-shadow: 0 18px 35px var(--shadow-color);
         }}
-        /* 定义分节标题样式 */
         .section-title {{
-            color: var(--medical-deep);
+            color: var(--heading-color);
             font-size: 1.08rem;
             font-weight: 800;
             padding-left: 0.7rem;
@@ -94,12 +131,12 @@ def inject_global_css(theme="医疗蓝"):
             min-width: 92px;
         }}
         .metric-card {{
-            background: rgba(255,255,255,0.85);
-            border: 1px solid rgba(20, 72, 133, 0.08);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 0.9rem 0.8rem;
             min-height: 110px;
-            box-shadow: 0 10px 20px rgba(20, 72, 133, 0.06);
+            box-shadow: 0 10px 20px var(--shadow-color);
             transition: transform 0.2s ease;
         }}
         .metric-card:hover {{ transform: translateY(-3px); }}
@@ -114,7 +151,7 @@ def inject_global_css(theme="医疗蓝"):
             margin-top: 0.45rem;
             font-size: 1.7rem;
             font-weight: 900;
-            color: var(--medical-deep);
+            color: var(--heading-color);
             font-family: "Consolas", "Courier New", monospace;
         }}
         .metric-subtext {{
@@ -126,8 +163,8 @@ def inject_global_css(theme="医疗蓝"):
             display: flex;
             align-items: center;
             gap: 0.45rem;
-            color: var(--medical-deep);
-            font-size: 1.08rem;
+            color: var(--heading-color);
+            font-size: 20px;
             font-weight: 800;
             padding: 0.2rem 0 0.2rem 0.7rem;
             border-left: 4px solid var(--medical-blue);
@@ -149,40 +186,50 @@ def inject_global_css(theme="医疗蓝"):
             min-height: 0;
         }}
         .ecg-info-card {{
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(20, 72, 133, 0.1);
-            box-shadow: 0 10px 24px rgba(20, 72, 133, 0.08);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 24px var(--shadow-color);
         }}
         .ecg-info-card.ecg-green-card {{
-            background: #e8f5e9;
-            border-color: #a5d6a7;
-            color: #1b5e20;
+            background: color-mix(in srgb, #2e7d32 10%, var(--card-bg));
+            border-color: color-mix(in srgb, #2e7d32 30%, var(--border-color));
+            color: var(--text-color);
         }}
         .ecg-info-card.ecg-blue-card {{
-            background: #edf5ff;
-            border-color: #b7d5ff;
+            background: var(--medical-soft);
+            border-color: color-mix(in srgb, var(--primary-color) 28%, var(--border-color));
+        }}
+        .ecg-info-accent {{
+            height: 4px;
+            border-radius: 999px;
+            margin-bottom: 0.6rem;
+            background: var(--primary-color);
+        }}
+        .ecg-info-accent.ecg-green-card {{
+            background: #2e7d32;
+        }}
+        .ecg-info-accent.ecg-blue-card {{
+            background: var(--primary-color);
         }}
         .ecg-card-title {{
-            color: var(--medical-deep);
+            color: var(--heading-color);
             font-size: 1rem;
             font-weight: 800;
             margin-bottom: 0.45rem;
         }}
-        .ecg-green-card .ecg-card-title {{ color: #1b5e20; }}
         .ecg-card-content {{
-            color: var(--text);
+            color: var(--text-color);
             line-height: 1.7;
             white-space: pre-wrap;
         }}
-        .ecg-green-card .ecg-card-content {{ color: #1b5e20; }}
         .ecg-stat-card {{
-            background: rgba(255, 255, 255, 0.92);
-            border: 1px solid rgba(20, 72, 133, 0.1);
-            box-shadow: 0 10px 24px rgba(20, 72, 133, 0.08);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 24px var(--shadow-color);
             text-align: center;
         }}
         .ecg-stat-value {{
-            color: var(--medical-deep);
+            color: var(--heading-color);
             font-size: 1.7rem;
             font-weight: 900;
             line-height: 1.2;
@@ -199,29 +246,87 @@ def inject_global_css(theme="医疗蓝"):
             margin-left: 0.2rem;
         }}
         .ecg-feature-card {{
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(20, 72, 133, 0.1);
-            box-shadow: 0 8px 20px rgba(20, 72, 133, 0.06);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px var(--shadow-color);
             min-height: 105px;
         }}
         .ecg-feature-icon {{ font-size: 1.2rem; margin-right: 0.35rem; }}
-        .ecg-feature-title {{ color: var(--medical-deep); font-weight: 800; }}
+        .ecg-feature-title {{ color: var(--heading-color); font-weight: 800; }}
         .ecg-feature-desc {{ color: var(--muted); line-height: 1.6; margin-top: 0.45rem; }}
         .ecg-warning-card {{
-            background: #fff8e1;
-            border: 1px solid #f2c66d;
+            background: color-mix(in srgb, #f2c66d 18%, var(--card-bg));
+            border: 1px solid color-mix(in srgb, #f2c66d 65%, var(--border-color));
             box-shadow: 0 8px 18px rgba(173, 119, 20, 0.08);
-            color: #7a4f01;
+            color: var(--text-color);
             line-height: 1.7;
         }}
-        .stButton > button {{
-            border-radius: 12px;
-            font-weight: 700;
-            transition: all 0.2s ease;
+        .ecg-page-header {{
+            padding: 0.9rem 1.2rem;
+            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
         }}
-        .stButton > button:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(15,111,255,0.16);
+        .ecg-page-header-title {{
+            color: var(--heading-color);
+            font-size: 1.35rem;
+            font-weight: 800;
+        }}
+        .ecg-page-header-meta {{
+            color: var(--muted-color);
+            font-size: 0.8rem;
+        }}
+        .ecg-clinical-feature-card {{
+            padding: 0.8rem 0.9rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            min-height: 86px;
+        }}
+        .ecg-clinical-feature-card.is-abnormal {{
+            background: color-mix(in srgb, #b42318 8%, var(--card-bg));
+            border-color: color-mix(in srgb, #b42318 24%, var(--border-color));
+            color: var(--text-color);
+        }}
+        .ecg-report-card {{
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 1rem 1.2rem;
+            border-radius: 16px;
+            margin: 0.7rem 0 1rem;
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }}
+        .ecg-report-card-title {{
+            color: var(--heading-color);
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }}
+        .ecg-report-card-content {{
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }}
+        .ecg-history-tag {{
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: var(--medical-soft);
+            color: var(--heading-color);
+            font-size: 12px;
+            margin: 0 4px 4px 0;
+        }}
+        [data-testid="stMarkdownContainer"] {{
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.7;
+        }}
+        .ecg-card-note {{
+            color: var(--muted-color);
+            font-size: 12px;
         }}
         </style>
         """,
@@ -234,17 +339,9 @@ def inject_global_css(theme="医疗蓝"):
 
 def render_patient_card(patient_name="未命名患者", age="未录入", sex="未指定"):
     """渲染患者基础信息卡片。"""
-    st.markdown(
-        f"""
-        <div class="glass-panel" style="min-height:0;">
-            <h3>👤 患者信息</h3>
-            <div>姓名：{patient_name}</div>
-            <div>年龄：{age}</div>
-            <div>性别：{sex}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        render_section_title("患者信息", "👤")
+        st.markdown(f"- **姓名：** {patient_name}\n- **年龄：** {age} 岁\n- **性别：** {sex}")
 
 
 # 渲染上传卡片
@@ -252,14 +349,8 @@ def render_patient_card(patient_name="未命名患者", age="未录入", sex="�
 
 def render_upload_card():
     """渲染 ECG 文件上传区和示例数据按钮。"""
-    st.markdown(
-        """
-        <div class="glass-panel" style="min-height:0;">
-            <h3>⤴️ 采集数据</h3>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        render_section_title("采集数据", "⤴️")
     uploaded = st.file_uploader("选择 ECG 文件", type=["csv", "txt", "dat"], label_visibility="collapsed")
     demo = st.button("加载示例数据", use_container_width=True)
     return uploaded, demo
@@ -279,7 +370,7 @@ def render_risk_badge(level="低危", value=None):
     color, text = level_map.get(level, level_map["未知"])
     if value is not None:
         text = f"{text} · {value:.2f}"
-    st.markdown(f'<span class="risk-badge" style="background:linear-gradient(135deg,{color},#183b63);">{text}</span>', unsafe_allow_html=True)
+    st.markdown(f'<span class="risk-badge" style="background:linear-gradient(135deg,{color},var(--primary-color));">{text}</span>', unsafe_allow_html=True)
 
 
 # 渲染指标卡片
@@ -296,11 +387,12 @@ def render_section_title(title="分节标题", icon=""):
 
 
 def render_info_card(title, content, icon="", variant=""):
-    class_name = f"ecg-info-card {variant}".strip()
-    st.markdown(
-        f'<div class="{class_name}"><div class="ecg-card-title">{_icon_html(icon)}{title}</div><div class="ecg-card-content">{content}</div></div>',
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        if variant in {"ecg-green-card", "ecg-blue-card"}:
+            st.markdown(f'<div class="ecg-info-accent {variant}"></div>', unsafe_allow_html=True)
+        render_section_title(title, icon)
+        if content:
+            st.markdown(str(content))
 
 
 def render_stat_card(label, value, unit="", icon=""):
@@ -311,11 +403,11 @@ def render_stat_card(label, value, unit="", icon=""):
 
 
 def render_feature_card(title, desc, icon=""):
-    st.markdown(
-        f'<div class="ecg-feature-card"><div class="ecg-feature-title"><span class="ecg-feature-icon">{_icon_html(icon)}</span>{title}</div><div class="ecg-feature-desc">{desc}</div></div>',
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        render_section_title(title, icon)
+        st.markdown(str(desc))
 
 
 def render_warning_card(text):
-    st.markdown(f'<div class="ecg-warning-card">{text}</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown(f"> **提示：** {text}")

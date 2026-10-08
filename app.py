@@ -47,7 +47,8 @@ from src.ui_components import (
 st.set_page_config(
     page_title="ECG辅助筛查",
     page_icon="assets/favicon.jpg",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 APP_VERSION = "v2.1.0"
@@ -100,9 +101,9 @@ def render_sidebar():
 def render_header(page, config):
     st.markdown(
         """
-        <div style="padding:0.9rem 1.2rem;border-radius:18px;background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.8);box-shadow:0 18px 30px rgba(17,39,73,0.08);margin-bottom:1rem;">
-            <div style="font-size:1.7rem;font-weight:800;color:#0b2d7a;">♥ 心电风险可解释辅助筛查</div>
-            <div style="font-size:0.8rem;color:#667085;">当前页面：{page} · 版本 {version} · 阈值 {med:.2f}/{high:.2f}</div>
+        <div class="ecg-page-header">
+            <div class="ecg-page-header-title">♥ 心电风险可解释辅助筛查</div>
+            <div class="ecg-page-header-meta">当前页面：{page} · 版本 {version} · 阈值 {med:.2f}/{high:.2f}</div>
         </div>
         """.format(page=html.escape(page), version=APP_VERSION, med=float(config.get("risk_threshold_medium", 0.4)), high=float(config.get("risk_threshold_high", 0.7))),
         unsafe_allow_html=True,
@@ -167,10 +168,9 @@ def render_feature_card(name, value, severity):
         value: 特征数值
         severity: 判读状态，如 正常 / 轻度异常
     """
-    card_bg = "rgba(255, 235, 238, 0.75)" if "异常" in severity else "rgba(255,255,255,0.8)"
-    text_color = "#b42318" if "异常" in severity else "#18324f"
+    abnormal_class = " is-abnormal" if "异常" in severity else ""
     st.markdown(
-        f"<div style='background:{card_bg};padding:0.8rem 0.9rem;border-radius:14px;border:1px solid rgba(181, 30, 24, 0.08);color:{text_color};min-height:86px;'><div style='font-size:0.78rem;font-weight:700;opacity:0.8;'>{name}</div><div style='font-size:1.15rem;font-weight:800;margin-top:0.45rem;'>{float(value):.3f}</div><div style='font-size:0.72rem;font-weight:700;margin-top:0.25rem;'>{severity}</div></div>",
+        f"<div class='ecg-clinical-feature-card{abnormal_class}'><div style='font-size:0.78rem;font-weight:700;opacity:0.8;'>{name}</div><div style='font-size:1.15rem;font-weight:800;margin-top:0.45rem;'>{float(value):.3f}</div><div style='font-size:0.72rem;font-weight:700;margin-top:0.25rem;'>{severity}</div></div>",
         unsafe_allow_html=True,
     )
 
@@ -188,33 +188,34 @@ def render_clinical_feature_groups(result):
         "波形形态": ["P_amp"],
     }
     for label, names in groups.items():
-        st.subheader(label)
+        render_section_title(label)
         cols = st.columns(len(names))
         for col, name in zip(cols, names):
             with col:
                 value = result.get("features", {}).get(name, 0)
                 severity, display_text = judge_feature(name, value, DEFAULT_THRESHOLDS, sex=result.get("patient_info", {}).get("sex", "未指定"))
                 render_feature_card(name, value, severity)
-        st.markdown("---")
+        st.divider()
 
 
 # 渲染报告分段块
 # 按统一风格输出结构化说明，便于患者和医生查看
 
-def render_report_section(title, body, bg_color="#f5f7ff", text_color="#18324f"):
+def render_report_section(title, body):
     """
     按卡片样式渲染报告段落。
 
     参数:
         title: 段落标题
         body: 段落内容
-        bg_color: 背景色
-        text_color: 文本色
     """
-    st.markdown(
-        f"<div style='background:{bg_color};padding:1rem 1.2rem;border-radius:16px;border:1px solid rgba(24,50,79,0.08);color:{text_color};margin:0.7rem 0 1rem 0;'><div style='font-size:1.05rem;font-weight:800;margin-bottom:0.5rem;'>{title}</div><div style='white-space:pre-wrap;line-height:1.8;'>{html.escape(body)}</div></div>",
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        render_section_title(title)
+        text = str(body or "").strip()
+        if text:
+            paragraphs = [part.strip() for part in text.split("\n\n") if part.strip()]
+            for paragraph in paragraphs:
+                st.markdown(paragraph)
 
 
 def get_llm_request_settings():
@@ -232,30 +233,34 @@ def get_llm_request_settings():
 
 def analysis_page(config):
     st.title("心电分析")
-    st.caption("上传单导联 ECG，完成预处理、双通路分析与可解释报告生成。所有患者数据仅保存在本地，不会对外上传。")
+    with st.container(border=True):
+        st.caption("上传单导联 ECG，完成预处理、双通路分析与可解释报告生成。所有患者数据仅保存在本地，不会对外上传。")
     result = st.session_state.get("analysis_result")
 
     left = st.container()
     right = st.container()
     with left:
-        with st.expander("管理个人信息", expanded=True):
-            st.session_state["patient_name"] = st.text_input("姓名", value=st.session_state.get("patient_name", ""), max_chars=50)
-            st.session_state["patient_age"] = st.number_input("年龄", min_value=0, max_value=120, value=int(st.session_state.get("patient_age", 0)))
-            st.session_state["patient_sex"] = st.selectbox("性别", ["未指定", "男", "女"], index=["未指定", "男", "女"].index(st.session_state.get("patient_sex", "未指定")))
-            st.session_state["patient_height"] = st.number_input("身高（cm）", min_value=50, max_value=250, value=int(st.session_state.get("patient_height", 170)))
-            st.session_state["patient_weight"] = st.number_input("体重（kg）", min_value=10.0, max_value=300.0, value=float(st.session_state.get("patient_weight", 65.0)))
-            history_options = ["高血压", "糖尿病", "冠心病", "无"]
-            st.session_state["patient_history"] = st.multiselect("既往病史", history_options, default=list(st.session_state.get("patient_history", []) or []))
-            st.session_state["patient_medication"] = st.text_input("用药情况", value=st.session_state.get("patient_medication", ""), placeholder="如：阿托伐他汀、降压药")
-            if st.button("保存个人信息", use_container_width=True):
-                save_patient_profile()
-                st.success("个人信息已保存")
-        symptoms = st.text_area(
-            "症状描述（可选）",
-            value=st.session_state.get("symptoms", ""),
-            placeholder="如：最近一周胸闷、心悸，运动后加重",
-            max_chars=200,
-        )
+        with st.container(border=True):
+            with st.expander("管理个人信息", expanded=True):
+                st.session_state["patient_name"] = st.text_input("姓名", value=st.session_state.get("patient_name", ""), max_chars=50)
+                st.session_state["patient_age"] = st.number_input("年龄", min_value=0, max_value=120, value=int(st.session_state.get("patient_age", 0)))
+                st.session_state["patient_sex"] = st.selectbox("性别", ["未指定", "男", "女"], index=["未指定", "男", "女"].index(st.session_state.get("patient_sex", "未指定")))
+                st.session_state["patient_height"] = st.number_input("身高（cm）", min_value=50, max_value=250, value=int(st.session_state.get("patient_height", 170)))
+                st.session_state["patient_weight"] = st.number_input("体重（kg）", min_value=10.0, max_value=300.0, value=float(st.session_state.get("patient_weight", 65.0)))
+                history_options = ["高血压", "糖尿病", "冠心病", "无"]
+                st.session_state["patient_history"] = st.multiselect("既往病史", history_options, default=list(st.session_state.get("patient_history", []) or []))
+                st.session_state["patient_medication"] = st.text_input("用药情况", value=st.session_state.get("patient_medication", ""), placeholder="如：阿托伐他汀、降压药")
+                if st.button("保存个人信息", use_container_width=True):
+                    save_patient_profile()
+                    st.success("个人信息已保存")
+        with st.container(border=True):
+            render_section_title("症状描述", "✚")
+            symptoms = st.text_area(
+                "症状描述（可选）",
+                value=st.session_state.get("symptoms", ""),
+                placeholder="如：最近一周胸闷、心悸，运动后加重",
+                max_chars=200,
+            )
         st.session_state["symptoms"] = symptoms
         valid, msg = validate_patient_info(st.session_state.get("patient_name", ""), st.session_state.get("patient_age", 0), st.session_state.get("patient_sex", "未指定"))
         if not valid:
@@ -309,23 +314,21 @@ def analysis_page(config):
         tabs = st.tabs(["核心结论与波形", "临床特征", "SHAP可解释性", "筛查报告"])
         if result is None:
             with tabs[0]:
-                st.info("请先上传数据并分析。")
+                with st.container(border=True):
+                    st.info("请先上传数据并分析。")
             return
 
         with tabs[0]:
-            st.subheader("核心结论")
-            risk_color = RISK_COLORS.get(result["risk_level"], "#8c8c8c")
-            st.markdown(
-                f'<div style="padding:1rem;border-radius:18px;background:linear-gradient(135deg,{risk_color},#0b2d7a);color:white;box-shadow:0 12px 26px rgba(0,0,0,.12);">'
-                f'<h3>{result["risk_level"]}</h3><p>风险评分：{result["score"]:.2f}</p></div>',
-                unsafe_allow_html=True,
-            )
+            with st.container(border=True):
+                render_section_title("核心结论", "♥")
+                render_risk_badge(result["risk_level"], float(result["score"]))
+                st.markdown(f"**风险评分：** `{result['score']:.2f}`")
             c1, c2, c3, c4 = st.columns(4)
             with c1: render_metric_card("心率", f"{result['features'].get('HR', 0):.1f}", "次/分")
             with c2: render_metric_card("总心拍", str(len(result["r_peaks"])), "个")
             with c3: render_metric_card("异常心拍", str(len(result["abnormal_positions"])), "个")
             with c4: render_metric_card("采样率", f"{result['fs']:.0f}", "Hz")
-            st.markdown("---")
+            st.divider()
             render_ui_info_card("波形概览", "清洗后的单导联ECG波形、R峰和异常心拍定位结果。", "⌁")
             render_waveform(result)
 
@@ -432,49 +435,65 @@ def analysis_page(config):
                     custom_api_key = st.session_state.get("custom_api_key", "") or None
                     custom_model = st.session_state.get("custom_model", "glm-4-flash-250414") or "glm-4-flash-250414"
                     custom_base_url = st.session_state.get("custom_base_url", "") or None
-                    polished = polish_report_with_glm(offline_report, api_key=custom_api_key, model=custom_model, base_url=custom_base_url, symptoms=result.get("symptoms", ""))
-                    if polished is None:
-                        st.session_state["polished_report"] = offline_report
-                        st.warning("AI服务暂时不可用，请稍后重试；已回退到离线建议")
+                    ai_result = polish_report_with_glm(offline_report, api_key=custom_api_key, model=custom_model, base_url=custom_base_url, symptoms=result.get("symptoms", ""))
+                    # Treat None or explicit fallback messages as failure and keep ai_polished_report separate from offline_report
+                    fallback_indicators = ("未配置密钥", "已回退到离线建议", "离线建议为空", "AI服务暂时不可用")
+                    if ai_result is None or any(ind in str(ai_result) for ind in fallback_indicators):
+                        st.session_state["ai_polished_report"] = None
+                        st.error("AI润色失败，已使用离线建议")
                     else:
-                        st.session_state["polished_report"] = polished
+                        st.session_state["ai_polished_report"] = str(ai_result)
                         st.success("已生成 AI 润色版本")
-                except Exception as exc:
-                    st.session_state["polished_report"] = offline_report
-                    st.warning(f"AI 润色失败，已回退到离线建议：{exc}")
-            padded = st.session_state.get("polished_report", offline_report)
+                except Exception:
+                    st.session_state["ai_polished_report"] = None
+                    st.error("AI润色失败，已使用离线建议")
+            ai_polished_report = st.session_state.get("ai_polished_report", None)
             version = st.radio("选择版本", ["离线建议", "AI润色版"], horizontal=True)
             if version == "离线建议":
-                st.markdown("### 离线建议")
+                render_section_title("离线建议")
                 risk_summary = report_data.get("risk_summary") or ""
                 etiology_analysis = report_data.get("etiology_analysis") or ""
                 lifestyle_advice = report_data.get("lifestyle_advice") or ""
                 doctor_communication = report_data.get("doctor_communication") or ""
                 disclaimer = report_data.get("disclaimer") or "本报告仅供参考，不能替代专业医生诊断。"
-                render_report_section("风险结论", risk_summary or offline_report.split("综合建议：", 1)[0][:300], "#f6f7fb")
-                render_report_section("病因分析", etiology_analysis or "病因分析：请结合具体参数评估。", "#fff2f0")
-                render_report_section("生活建议", lifestyle_advice or "生活建议：请保持规律作息并复查。", "#edfff2")
-                render_report_section("医生沟通话术", doctor_communication or "医生沟通话术：请结合临床症状进行复核。", "#eef6ff")
-                render_report_section("免责声明", disclaimer, "#f3f4f6")
+                render_report_section("风险结论", risk_summary or offline_report.split("综合建议：", 1)[0][:300])
+                st.divider()
+                render_report_section("病因分析", etiology_analysis or "请结合具体参数评估。")
+                st.divider()
+                render_report_section("生活建议", lifestyle_advice or "请保持规律作息并复查。")
+                st.divider()
+                render_report_section("医生沟通话术", doctor_communication or "请结合临床症状进行复核。")
+                st.divider()
+                render_report_section("免责声明", disclaimer)
                 st.download_button("下载离线报告", offline_report, "心电筛查报告.txt", "text/plain", use_container_width=True)
             else:
-                st.markdown("### AI润色版")
-                ai_report_data = {k: v for k, v in report_data.items() if isinstance(v, str)}
-                risk_summary_ai = ai_report_data.get("risk_summary") or padded
-                etiology_analysis_ai = ai_report_data.get("etiology_analysis") or padded
-                lifestyle_advice_ai = ai_report_data.get("lifestyle_advice") or padded
-                doctor_communication_ai = ai_report_data.get("doctor_communication") or padded
-                disclaimer_ai = ai_report_data.get("disclaimer") or "本报告仅供参考，不能替代专业医生诊断。"
-                render_report_section("风险结论", risk_summary_ai, "#f6f7fb")
-                render_report_section("病因分析", etiology_analysis_ai, "#fff2f0")
-                render_report_section("生活建议", lifestyle_advice_ai, "#edfff2")
-                render_report_section("医生沟通话术", doctor_communication_ai, "#eef6ff")
-                render_report_section("免责声明", disclaimer_ai, "#f3f4f6")
-                st.download_button("下载 AI 润色版", padded, "心电筛查报告_ai.txt", "text/plain", use_container_width=True)
+                render_section_title("AI润色版")
+                if ai_polished_report:
+                    render_report_section("AI润色（通俗版）", ai_polished_report)
+                    st.download_button("下载 AI 润色版", ai_polished_report, "心电筛查报告_ai.txt", "text/plain", use_container_width=True)
+                else:
+                    # 明确提示 AI 润色失败，并回退到离线建议
+                    st.error("AI润色失败，已使用离线建议")
+                    risk_summary = report_data.get("risk_summary") or ""
+                    etiology_analysis = report_data.get("etiology_analysis") or ""
+                    lifestyle_advice = report_data.get("lifestyle_advice") or ""
+                    doctor_communication = report_data.get("doctor_communication") or ""
+                    disclaimer = report_data.get("disclaimer") or "本报告仅供参考，不能替代专业医生诊断。"
+                    render_report_section("风险结论", risk_summary or offline_report.split("综合建议：", 1)[0][:300])
+                    st.divider()
+                    render_report_section("病因分析", etiology_analysis or "请结合具体参数评估。")
+                    st.divider()
+                    render_report_section("生活建议", lifestyle_advice or "请保持规律作息并复查。")
+                    st.divider()
+                    render_report_section("医生沟通话术", doctor_communication or "请结合临床症状进行复核。")
+                    st.divider()
+                    render_report_section("免责声明", disclaimer)
+                    st.download_button("下载离线报告", offline_report, "心电筛查报告.txt", "text/plain", use_container_width=True)
 
-            st.markdown("---")
+            st.divider()
             render_section_title("AI智能解读")
-            st.caption("AI解读用于辅助理解筛查结果，不能替代执业医师诊断。")
+            with st.container(border=True):
+                st.caption("AI解读用于辅助理解筛查结果，不能替代执业医师诊断。")
             if st.button("生成AI智能解读", use_container_width=True):
                 llm_api_key, llm_model, llm_base_url = get_llm_request_settings()
                 diagnosis = generate_ai_diagnosis(
@@ -492,16 +511,22 @@ def analysis_page(config):
                     st.success("已生成AI智能解读")
             diagnosis = st.session_state.get("ai_diagnosis")
             if diagnosis:
-                render_report_section("风险总结", diagnosis.get("risk_summary", ""), "#f6f7fb")
-                render_report_section("病因分析", diagnosis.get("etiology_analysis", ""), "#fff2f0")
-                render_report_section("SHAP归因解读", diagnosis.get("shap_interpretation", ""), "#eef6ff")
-                render_report_section("生活建议", diagnosis.get("lifestyle_advice", ""), "#edfff2")
-                render_report_section("紧急情况提示", diagnosis.get("emergency_warning", ""), "#fff1f0")
+                render_report_section("风险总结", diagnosis.get("risk_summary", ""))
+                st.divider()
+                render_report_section("病因分析", diagnosis.get("etiology_analysis", ""))
+                st.divider()
+                render_report_section("SHAP归因解读", diagnosis.get("shap_interpretation", ""))
+                st.divider()
+                render_report_section("生活建议", diagnosis.get("lifestyle_advice", ""))
+                st.divider()
+                render_report_section("紧急情况提示", diagnosis.get("emergency_warning", ""))
                 feature_explanations = diagnosis.get("feature_explanations") or []
                 if feature_explanations:
-                    st.markdown("#### 特征解释")
-                    st.dataframe(pd.DataFrame(feature_explanations), use_container_width=True, hide_index=True)
+                    with st.container(border=True):
+                        render_section_title("特征解释")
+                        st.dataframe(pd.DataFrame(feature_explanations), use_container_width=True, hide_index=True)
 
+            st.divider()
             render_section_title("问AI")
             question = st.text_input("请输入关于本次心电结果或常见心电疾病的问题", key="rag_question")
             if st.button("提问", key="ask_rag", use_container_width=True):
@@ -512,7 +537,7 @@ def analysis_page(config):
                 else:
                     st.session_state["rag_answer"] = "AI服务暂时不可用，请稍后重试；请先参考离线报告，并咨询专业医护人员。"
             if st.session_state.get("rag_answer"):
-                render_report_section("AI回答", st.session_state["rag_answer"], "#eef6ff")
+                render_report_section("AI回答", st.session_state["rag_answer"])
 
             if st.button("保存到历史记录", type="primary", use_container_width=True):
                 history_path = config.get("storage_path", "storage/records.json")
@@ -565,7 +590,7 @@ def render_patient_history_cards(records):
                     render_risk_badge(risk)
                     if tags:
                         tag_html = " ".join(
-                            f"<span style='display:inline-block;padding:4px 8px;border-radius:999px;background:#eef5ff;color:#0b2d7a;font-size:12px;margin:0 4px 4px 0;'>{html.escape(tag)}</span>"
+                            f"<span class='ecg-history-tag'>{html.escape(tag)}</span>"
                             for tag in sorted(set(tags))[:3]
                         )
                         st.markdown(tag_html, unsafe_allow_html=True)
@@ -588,7 +613,7 @@ def history_page(config):
 
     render_section_title("患者记录", "👥")
     render_patient_history_cards(records)
-    st.markdown("---")
+    st.divider()
     selected_patient = st.session_state.get("selected_history_patient")
     if selected_patient:
         render_section_title(f"{mask_name(selected_patient)} 的筛查时间线", "↗")
@@ -602,22 +627,62 @@ def history_page(config):
                 record_id = row.get("record_id") or f"record_{row.get('时间', '')}_{row.get('文件名', '')}"
                 risk = row.get("风险等级", "未知")
                 score = float(row.get("风险评分", 0) or 0)
+                feature_values = row.get("特征") if isinstance(row.get("特征"), dict) else {}
+                report_text = row.get("报告", "") or "暂无报告"
                 with st.container(border=True):
-                    header_cols = st.columns([2, 1])
-                    with header_cols[0]:
-                        st.markdown(f"**{row.get('时间', '暂无日期')} · {row.get('文件名', '暂无文件名')}**")
-                    with header_cols[1]:
-                        render_risk_badge(risk, score)
-                    feature_values = row.get("特征") if isinstance(row.get("特征"), dict) else {}
-                    hr = feature_values.get("HR", "暂无数据")
-                    abnormal_count = row.get("异常心拍数", "暂无数据")
-                    st.markdown(f"**关键指标**　心率：{hr}　异常心拍数：{abnormal_count}")
-                    st.markdown(f"**症状描述**　{row.get('symptoms') or '未填写'}")
-                    if row.get("备注"):
-                        st.caption(f"备注：{row.get('备注')}")
-                    report_text = row.get("报告", "") or "暂无报告"
-                    st.markdown("**完整报告**")
-                    st.markdown(report_text)
+                    render_section_title("时间", "◷")
+                    st.markdown(f"**{row.get('时间', '暂无日期')}**")
+                    st.caption(f"文件：{row.get('文件名', '暂无文件名')}")
+                    st.divider()
+
+                    with st.container(border=True):
+                        render_section_title("关键指标", "▥")
+                        metric_cols = st.columns(3)
+                        metric_cols[0].metric("风险评分", f"{score:.2f}")
+                        metric_cols[1].metric("心率", f"{feature_values.get('HR', '暂无数据')} 次/分")
+                        metric_cols[2].metric("异常心拍数", row.get("异常心拍数", "暂无数据"))
+                        render_risk_badge(risk)
+
+                    st.divider()
+                    with st.container(border=True):
+                        render_section_title("症状", "✚")
+                        st.markdown(row.get("symptoms") or "未填写症状描述。")
+                        if row.get("备注"):
+                            st.caption(f"备注：{row.get('备注')}")
+
+                    st.divider()
+                    with st.container(border=True):
+                        render_section_title("完整报告", "▤")
+                        report_sections = {
+                            "风险分级": [],
+                            "病因分析": [],
+                            "生活建议": [],
+                            "医生沟通话术": [],
+                        }
+                        section_markers = {
+                            "病因分析：": "病因分析",
+                            "生活建议：": "生活建议",
+                            "医生沟通话术：": "医生沟通话术",
+                        }
+                        current_section = "风险分级"
+                        for report_line in report_text.splitlines():
+                            marker = next((label for label in section_markers if report_line.startswith(label)), None)
+                            if marker:
+                                current_section = section_markers[marker]
+                                section_value = report_line[len(marker):].strip()
+                                if section_value:
+                                    report_sections[current_section].append(section_value)
+                            else:
+                                report_sections[current_section].append(report_line)
+
+                        for section_number, (section_title, section_lines) in enumerate(report_sections.items()):
+                            section_content = "\n".join(section_lines).strip()
+                            if not section_content:
+                                continue
+                            if section_number:
+                                st.divider()
+                            render_section_title(section_title)
+                            st.markdown(section_content)
                     st.download_button("导出报告", report_text, "心电筛查历史报告.txt", "text/plain", key=f"download_{record_id}", use_container_width=True)
                     if st.button("删除该记录", key=f"delete_record_{record_id}", use_container_width=True):
                         if st.session_state.get(f"delete_confirm_{record_id}"):
@@ -640,16 +705,18 @@ def settings_page(config):
             c1, c2, c3 = st.columns(3)
             medium = c1.number_input("中危阈值", 0.0, 1.0, float(config.get("risk_threshold_medium", 0.4)), 0.05)
             high = c2.number_input("高危阈值", 0.0, 1.0, float(config.get("risk_threshold_high", 0.7)), 0.05)
-            theme_options = ["医疗蓝", "清新绿", "暖阳橙"]
+            theme_options = ["医疗蓝", "纯白极简", "深色护眼", "磨砂灰"]
             current_theme = config.get("theme", "医疗蓝")
             theme = c3.selectbox("主题", theme_options, index=theme_options.index(current_theme) if current_theme in theme_options else 0)
 
+        st.divider()
         with st.container(border=True):
             render_section_title("模型路径", "◉")
             model_path = st.text_input("XGBoost 模型路径", config.get("model_path", "models/ecg_risk_xgb_model.json"))
             cnn_model_path = st.text_input("CNN 模型路径", config.get("cnn_model_path", "models/cnn_model.h5"))
             show_shap = st.checkbox("显示 SHAP 图", value=config.get("show_shap", True))
 
+        st.divider()
         with st.container(border=True):
             render_section_title("大模型API", "✦")
             st.caption("系统默认使用管理员配置的后台API。如需使用自己的API密钥，可在下方填写。")
@@ -706,23 +773,40 @@ def cases_page():
         render_section_title("病例列表", "▤")
         selected_title = st.selectbox("选择病例", [case["title"] for case in cases], label_visibility="collapsed")
         selected = next(case for case in cases if case["title"] == selected_title)
-        render_ui_info_card(
-            "病例概览",
-            f"类别：{selected.get('category', '未分类')}\n难度：{selected.get('difficulty', '未知')}\n风险：{selected.get('risk_level', '未知')}",
-            "ℹ",
-        )
+        with st.container(border=True):
+            render_section_title("病例概览", "ℹ")
+            st.markdown(
+                f"- **类别：** {selected.get('category', '未分类')}\n"
+                f"- **难度：** {selected.get('difficulty', '未知')}"
+            )
+            render_risk_badge(selected.get("risk_level", "未知"))
     with content_col:
-        render_ui_info_card("病例描述", selected.get("description", "暂无数据"), "▣")
+        with st.container(border=True):
+            render_section_title("病例描述", "▣")
+            st.markdown(selected.get("description", "暂无数据"))
+        st.divider()
         detail_cols = st.columns(2)
         with detail_cols[0]:
-            ecg_text = json.dumps(selected.get("ecg_features", {}), ensure_ascii=False, indent=2)
-            render_ui_info_card("ECG 特征", f"<pre>{html.escape(ecg_text)}</pre>", "⌁")
+            with st.container(border=True):
+                render_section_title("ECG 特征", "⌁")
+                ecg_features = selected.get("ecg_features", {}) or {}
+                if isinstance(ecg_features, dict):
+                    st.markdown("\n".join(f"- **{key}：** `{value}`" for key, value in ecg_features.items()) or "暂无数据")
+                else:
+                    st.markdown(str(ecg_features))
         with detail_cols[1]:
-            render_ui_info_card("临床分析", selected.get("clinical_analysis", "暂无数据"), "✚")
+            with st.container(border=True):
+                render_section_title("临床分析", "✚")
+                st.markdown(selected.get("clinical_analysis", "暂无数据"))
+        st.divider()
         points = selected.get("learning_points", []) or []
-        numbered_points = "<br>".join(f"{index}. {html.escape(str(item))}" for index, item in enumerate(points, 1)) or "暂无数据"
-        render_ui_info_card("学习要点", numbered_points, "✓")
-        render_ui_info_card("处理建议", selected.get("treatment_advice", "暂无数据"), "➜", "ecg-green-card")
+        with st.container(border=True):
+            render_section_title("学习要点", "✓")
+            st.markdown("\n".join(f"{index}. {item}" for index, item in enumerate(points, 1)) or "暂无数据")
+        st.divider()
+        with st.container(border=True):
+            render_section_title("处理建议", "➜")
+            st.markdown(selected.get("treatment_advice", "暂无数据"))
 
 
 # 渲染病情统计页面
@@ -730,7 +814,8 @@ def statistics_page():
     records = load_history()
     st.title("病情统计")
     if not records:
-        st.info("暂无筛查记录，完成一次分析后即可查看统计。")
+        with st.container(border=True):
+            st.info("暂无筛查记录，完成一次分析后即可查看统计。")
         return
 
     from src.report_gen import DEFAULT_THRESHOLDS, judge_feature
@@ -778,21 +863,22 @@ def statistics_page():
         if sex in sex_counts:
             sex_counts[sex] += 1
 
-    render_section_title("患者摘要", "▥")
-    summary_cols = st.columns(4)
-    with summary_cols[0]:
-        render_ui_stat_card("总筛查人数", len(unique_patients), "人")
-    with summary_cols[1]:
-        render_ui_stat_card("高危数", risk_counts["高危"], "例")
-    with summary_cols[2]:
-        render_ui_stat_card("平均年龄", f"{sum(ages) / len(ages):.1f}" if ages else "暂无数据", "岁")
-    total_sex = sex_counts["男"] + sex_counts["女"]
-    sex_ratio = f"{sex_counts['男']} : {sex_counts['女']}" if total_sex else "暂无数据"
-    with summary_cols[3]:
-        render_ui_stat_card("男女比例", sex_ratio, "男 : 女")
+    with st.container(border=True):
+        render_section_title("患者摘要", "▥")
+        summary_cols = st.columns(4)
+        with summary_cols[0]:
+            render_ui_stat_card("总筛查人数", len(unique_patients), "人")
+        with summary_cols[1]:
+            render_ui_stat_card("高危数", risk_counts["高危"], "例")
+        with summary_cols[2]:
+            render_ui_stat_card("平均年龄", f"{sum(ages) / len(ages):.1f}" if ages else "暂无数据", "岁")
+        total_sex = sex_counts["男"] + sex_counts["女"]
+        sex_ratio = f"{sex_counts['男']} : {sex_counts['女']}" if total_sex else "暂无数据"
+        with summary_cols[3]:
+            render_ui_stat_card("男女比例", sex_ratio, "男 : 女")
 
+    st.divider()
     render_section_title("高危病例", "!")
-    render_ui_info_card("高危病例列表", "姓名已脱敏，关键异常特征由阈值规则判读。", "▤")
     high_risk_rows = []
     for record in records:
         if record.get("风险等级") != "高危":
@@ -803,30 +889,49 @@ def statistics_page():
             "风险等级": record.get("风险等级") or "暂无数据",
             "关键异常特征": "；".join(abnormal_features(record)) or "暂无数据",
         })
-    if high_risk_rows:
-        st.dataframe(pd.DataFrame(high_risk_rows), use_container_width=True, hide_index=True)
-    else:
-        st.info("暂无高危病例。")
+    with st.container(border=True):
+        if high_risk_rows:
+            st.markdown("患者姓名已脱敏；关键异常特征由阈值规则判读。")
+            st.divider()
+            for index, case in enumerate(high_risk_rows):
+                with st.container(border=True):
+                    case_cols = st.columns([3, 1])
+                    with case_cols[0]:
+                        st.markdown(f"**{case['姓名']}** · {case['日期']}")
+                    with case_cols[1]:
+                        render_risk_badge(case["风险等级"])
+                    render_section_title("关键异常特征", "▥")
+                    feature_items = [item.strip() for item in case["关键异常特征"].split("；") if item.strip()]
+                    st.markdown("\n".join(f"- {item}" for item in feature_items) or "- 暂无数据")
+                if index < len(high_risk_rows) - 1:
+                    st.divider()
+        else:
+            st.info("暂无高危病例。")
 
+    st.divider()
     render_section_title("风险分布", "◔")
     summary = pd.Series(risk_counts).reindex(["低危", "中危", "高危"], fill_value=0)
     pie = px.pie(names=summary.index.tolist(), values=summary.values.tolist(), color=summary.index.tolist(), color_discrete_map=RISK_COLORS)
-    render_ui_info_card("风险等级分布", "按历史筛查记录统计", "◔")
-    st.plotly_chart(plot_layout(pie, 300), use_container_width=True)
+    with st.container(border=True):
+        st.markdown("按历史筛查记录统计。")
+        st.plotly_chart(plot_layout(pie, 300), use_container_width=True)
 
     feature_counts = {}
     for record in records:
         for item in abnormal_features(record):
             feature_name = item.split("：", 1)[0]
             feature_counts[feature_name] = feature_counts.get(feature_name, 0) + 1
+    st.divider()
     render_section_title("异常特征频率", "▥")
     if feature_counts:
         feature_frame = pd.DataFrame(sorted(feature_counts.items(), key=lambda item: item[1], reverse=True), columns=["特征", "异常次数"])
         feature_fig = px.bar(feature_frame, x="特征", y="异常次数", color="异常次数", color_continuous_scale=["#1677ff", "#f5222d"])
-        render_ui_info_card("异常特征频率", "轻度异常和显著异常均计入统计", "▥")
-        st.plotly_chart(plot_layout(feature_fig, 320), use_container_width=True)
+        with st.container(border=True):
+            st.markdown("轻度异常和显著异常均计入统计。")
+            st.plotly_chart(plot_layout(feature_fig, 320), use_container_width=True)
     else:
-        st.info("暂无异常特征数据。")
+        with st.container(border=True):
+            st.info("暂无异常特征数据。")
 
     trend_rows = []
     for record in records:
@@ -837,6 +942,7 @@ def statistics_page():
             date_value = "暂无日期"
         trend_rows.append({"日期": date_value, "风险等级": record.get("风险等级") or "未知"})
     trend_frame = pd.DataFrame(trend_rows).groupby(["日期", "风险等级"]).size().reset_index(name="筛查次数")
+    st.divider()
     render_section_title("筛查趋势", "↗")
     if not trend_frame.empty:
         trend_fig = go.Figure()
@@ -860,10 +966,12 @@ def statistics_page():
         if (trend_frame["日期"] == "暂无日期").any():
             trend_fig.add_annotation(text="含暂无日期记录", xref="paper", x=1, yref="paper", y=1.08, showarrow=False)
         trend_fig.update_layout(xaxis_title="日期", yaxis_title="筛查次数")
-        render_ui_info_card("筛查趋势", "按日期和风险等级统计筛查次数", "↗")
-        st.plotly_chart(plot_layout(trend_fig, 320), use_container_width=True)
+        with st.container(border=True):
+            st.markdown("按日期和风险等级统计筛查次数。")
+            st.plotly_chart(plot_layout(trend_fig, 320), use_container_width=True)
     else:
-        st.info("暂无趋势数据。")
+        with st.container(border=True):
+            st.info("暂无趋势数据。")
 
 
 # 渲染项目说明页面
@@ -877,6 +985,7 @@ def about_page():
         with col:
             render_ui_feature_card(title, desc, icon)
 
+    st.divider()
     render_section_title("核心功能", "▦")
     feature_cols = st.columns(3)
     features = [
@@ -891,6 +1000,7 @@ def about_page():
         with feature_cols[index % 3]:
             render_ui_feature_card(title, description, icon)
 
+    st.divider()
     render_section_title("技术架构", "⌘")
     architecture_cols = st.columns(4)
     architecture = [("前端展示层", "Streamlit负责页面交互、图表和报告展示", "▣"), ("业务服务层", "service/负责分析、历史、患者和配置业务", "⚙"), ("算法模型层", "src/负责预处理、特征、CNN、XGBoost和SHAP", "◉"), ("数据存储层", "SQLite保存记录，.npy文件保存波形数据", "▤")]
@@ -898,6 +1008,7 @@ def about_page():
         with col:
             render_ui_info_card(title, desc, icon)
 
+    st.divider()
     render_section_title("双通路说明", "⇄")
     path_cols = st.columns(2)
     with path_cols[0]:
@@ -906,6 +1017,7 @@ def about_page():
         render_ui_info_card("形态通路（1D-CNN）", "心拍级分析 → 异常心拍定位", "◉", "ecg-green-card")
     render_ui_info_card("判读原则", "两条通路独立输出结果，不自动融合，最终由医生结合临床信息综合判断。", "!", "ecg-blue-card")
 
+    st.divider()
     render_section_title("模型信息", "◈")
     model_cols = st.columns(2)
     with model_cols[0]:
@@ -916,12 +1028,15 @@ def about_page():
         render_ui_info_card("模型规模", "参数量：43,521", "#")
     render_ui_warning_card("诚实标注：高危敏感性未验证，原因是留出集无高危样本。")
 
+    st.divider()
     render_section_title("数据来源", "⌁")
     render_ui_info_card("训练数据", "MIT-BIH心律失常数据库", "▤")
 
+    st.divider()
     render_section_title("版本信息", "ℹ")
     render_ui_stat_card("当前版本", "V2.1.0", "2026年9月", "•")
 
+    st.divider()
     render_section_title("免责声明", "!")
     render_ui_warning_card("本系统为辅助筛查工具，不替代执业医师诊断。所有分析结果仅供参考，请由专业医护人员结合完整病史和必要检查进行终审。")
 
