@@ -1,0 +1,360 @@
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+
+  /* Automatic computation of border around primary / danger buttons */
+  --opaque-button-border-intensity: -8; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  /* AI护心镜 · 医疗专业主题（临床青绿主色 + 冷白中性基底 + 风险语义强调） */
+  --background: hsl(195 24% 97%);
+  --foreground: hsl(200 24% 16%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(200 24% 16%);
+  --card-border: hsl(200 18% 88%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(200 24% 16%);
+  --primary: hsl(187 65% 33%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(195 20% 94%);
+  --secondary-foreground: hsl(200 24% 20%);
+  --muted: hsl(195 18% 95%);
+  --muted-foreground: hsl(200 12% 45%);
+  --accent: hsl(187 45% 92%);
+  --accent-foreground: hsl(187 65% 24%);
+  --info: hsl(205 70% 42%);
+  --info-foreground: hsl(205 100% 98%);
+  --destructive: hsl(2 72% 52%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --success: hsl(152 56% 36%);
+  --success-foreground: hsl(150 70% 97%);
+  --warning: hsl(32 88% 46%);
+  --warning-foreground: hsl(33 100% 97%);
+  --border: hsl(200 18% 88%);
+  --input: hsl(200 18% 86%);
+  --ring: hsl(187 65% 38%);
+  --chart-1: hsl(187 65% 38%);
+  --chart-2: hsl(152 52% 42%);
+  --chart-3: hsl(38 88% 52%);
+  --chart-4: hsl(2 72% 55%);
+  --chart-5: hsl(205 68% 52%);
+  --sidebar: hsl(198 30% 98%);
+  --sidebar-foreground: hsl(200 24% 18%);
+  --sidebar-primary: hsl(187 65% 33%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(187 45% 92%);
+  --sidebar-accent-foreground: hsl(187 65% 26%);
+  --sidebar-border: hsl(200 18% 88%);
+  --sidebar-ring: hsl(187 65% 38%);
+
+  /* Computed borders using hsl relative color syntax */
+  --primary-border: hsl(from hsl(221 83% 53%) h s calc(l + var(--opaque-button-border-intensity)));
+  --secondary-border: hsl(from hsl(220 14% 96%) h s calc(l + var(--opaque-button-border-intensity)));
+  --destructive-border: hsl(from hsl(2 84% 62%) h s calc(l + var(--opaque-button-border-intensity)));
+  --accent-border: hsl(from hsl(220 14% 96%) h s calc(l + var(--opaque-button-border-intensity)));
+  --muted-border: hsl(from hsl(220 14% 96%) h s calc(l + var(--opaque-button-border-intensity)));
+  --font-sans:
+    'LarkHackSafariFont', 'LarkEmojiFont', 'LarkChineseQuote', '-apple-system',
+    'BlinkMacSystemFont', 'Helvetica Neue', 'Tahoma', 'PingFang SC',
+    'Microsoft Yahei', 'Arial', 'Hiragino Sans GB', 'sans-serif',
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif:
+    'Geist', 'Geist Fallback', ui-serif, Georgia, Cambria, 'Times New Roman',
+    Times, serif;
+  --font-mono: Source Code Pro, monospace;
+  --radius: 0.5rem;
+  --shadow-x: 0px;
+  --shadow-y: 2px;
+  --shadow-blur: 12px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.02;
+  --shadow-color: #000000;
+  --shadow-2xs: 0px 2px 12px 0px hsl(0 0% 0% / 0.01);
+  --shadow-xs: 0px 2px 12px 0px hsl(0 0% 0% / 0.01);
+  --shadow-sm:
+    0px 2px 12px 0px hsl(0 0% 0% / 0.02), 0px 1px 2px -1px hsl(0 0% 0% / 0.02);
+  --shadow:
+    0px 2px 12px 0px hsl(0 0% 0% / 0.02), 0px 1px 2px -1px hsl(0 0% 0% / 0.02);
+  --shadow-md:
+    0px 2px 12px 0px hsl(0 0% 0% / 0.02), 0px 2px 4px -1px hsl(0 0% 0% / 0.02);
+  --shadow-lg:
+    0px 2px 12px 0px hsl(0 0% 0% / 0.02), 0px 4px 6px -1px hsl(0 0% 0% / 0.02);
+  --shadow-xl:
+    0px 2px 12px 0px hsl(0 0% 0% / 0.02), 0px 8px 10px -1px hsl(0 0% 0% / 0.02);
+  --shadow-2xl: 0px 2px 12px 0px hsl(0 0% 0% / 0.05);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-card-border: var(--card-border);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}
+
+/**
+ * Tailwind v4 的 preflight 把元素默认 border-color 从 v3 的 gray-200 改成了
+ * currentColor，不显式声明的 `border` / `border-r` 会继承文字色，边框看起来又黑又重。
+ * shadcn 官方 v4 迁移指南要求项目自带这段 base 层补回来。
+ */
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: var(--ring);
+    @supports (color: color-mix(in lab, red, red)) {
+      outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+    }
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* 透明质感下 html 提供浅青兜底，避免面板透出时出现黑底；纯色态用冷白 */
+  html {
+    background-color: hsl(195 28% 94%);
+  }
+  html[data-surface='solid'] {
+    background-color: hsl(195 24% 97%);
+  }
+}
+
+/**
+ * Using the elevate system.
+ * Automatic contrast adjustment.
+ *
+ * <element className="hover-elevate" />
+ * <element className="active-elevate-2" />
+ *
+ * // Using the tailwind utility when a data attribute is "on"
+ * <element className="toggle-elevate data-[state=on]:toggle-elevated" />
+ * // Or manually controlling the toggle state
+ * <element className="toggle-elevate toggle-elevated" />
+ *
+ * Elevation systems have to handle many states.
+ * - not-hovered, vs. hovered vs. active  (three mutually exclusive states)
+ * - toggled or not
+ * - focused or not (this is not handled with these utilities)
+ *
+ * Even without handling focused or not, this is six possible combinations that
+ * need to be distinguished from eachother visually.
+ */
+@layer utilities {
+  /* Hide ugly search cancel button in Chrome until we can style it properly */
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  /* Placeholder styling for contentEditable div */
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+
+  /* .no-default-hover-elevate/no-default-active-elevate is an escape hatch so consumers of
+   * buttons/badges can remove the automatic brightness adjustment on interactions
+   * and program their own. */
+  .no-default-hover-elevate {}
+  .no-default-active-elevate {}
+
+
+  /**
+   * Toggleable backgrounds go behind the content. Hoverable/active goes on top.
+   * This way they can stack/compound. Both will overlap the parent's borders!
+   * So borders will be automatically adjusted both on toggle, and hover/active,
+   * and they will be compounded.
+   */
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    /*border-radius: inherit;   match rounded corners */
+    border-radius: inherit;
+    z-index: -1;
+    /* sits behind content but above backdrop */
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  /* If there's a 1px border, adjust the inset so that it covers that parent's border */
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  /* Does not work on elements with overflow:hidden!
+   * Wrap in :where() to zero out specificity so Tailwind position utilities (absolute/fixed/sticky) can override */
+  :where(.hover-elevate:not(.no-default-hover-elevate)),
+  :where(.active-elevate:not(.no-default-active-elevate)),
+  :where(.hover-elevate-2:not(.no-default-hover-elevate)),
+  :where(.active-elevate-2:not(.no-default-active-elevate)) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    /*border-radius: inherit;   match rounded corners */
+    border-radius: inherit;
+    z-index: 999;
+    /* sits in front of content */
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  /* If there's a 1px border, adjust the inset so that it covers that parent's border */
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+    inset: -1px;
+  }
+}
+
+/* ==========================================================================
+ * 界面质感（data-surface）：纯色 solid / 毛玻璃 glass / 磨砂 frosted
+ * 通过覆盖主题变量 + 给卡片/侧栏/顶栏加 backdrop-filter 实现，无需改各页面。
+ * ========================================================================== */
+
+/* 毛玻璃 / 磨砂时，body 背后铺一层柔和青绿光斑，让半透明面板“有物可透” */
+@layer base {
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    background:
+      radial-gradient(42rem 30rem at 12% -8%, hsl(187 70% 70% / 0.35), transparent 60%),
+      radial-gradient(38rem 28rem at 100% 0%, hsl(205 75% 72% / 0.30), transparent 55%),
+      radial-gradient(46rem 34rem at 50% 118%, hsl(152 55% 72% / 0.22), transparent 60%),
+      linear-gradient(180deg, hsl(195 30% 96%) 0%, hsl(190 28% 93%) 100%);
+  }
+
+  html[data-surface='glass'] body::before,
+  html[data-surface='frosted'] body::before {
+    opacity: 1;
+  }
+}
+
+/* 注意：变量覆盖不能放进 @layer —— Tailwind v4 的 @theme 变量层级更高，
+   分层规则会被压过；用普通（未分层）规则才能在运行时改写 --card 等。 */
+
+/* —— 毛玻璃：较高不透明度 + 中等模糊，稳重清晰 —— */
+html[data-surface='glass'] {
+  --card: hsl(0 0% 100% / 0.62);
+  --popover: hsl(0 0% 100% / 0.78);
+  --sidebar: hsl(198 32% 98% / 0.6);
+  --background: transparent;
+}
+html[data-surface='glass'] .bg-card,
+html[data-surface='glass'] .bg-sidebar {
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+}
+
+/* —— 磨砂：更通透 + 强模糊 + 高饱和，质感最强 —— */
+html[data-surface='frosted'] {
+  --card: hsl(0 0% 100% / 0.42);
+  --popover: hsl(0 0% 100% / 0.66);
+  --sidebar: hsl(198 34% 98% / 0.4);
+  --background: transparent;
+}
+html[data-surface='frosted'] .bg-card,
+html[data-surface='frosted'] .bg-sidebar {
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+  box-shadow:
+    0 1px 0 0 hsl(0 0% 100% / 0.5) inset,
+    0 10px 30px -12px hsl(199 60% 30% / 0.25);
+}
+
+/* 顶栏在两种透明质感下也做毛玻璃（它本就带 bg-background/80 + blur） */
+html[data-surface='glass'] header,
+html[data-surface='frosted'] header {
+  background-color: hsl(195 30% 97% / 0.55) !important;
+}
+html[data-surface='frosted'] header {
+  background-color: hsl(195 30% 97% / 0.4) !important;
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+}

@@ -1,0 +1,52 @@
+# =====================================================================
+# AI护心镜 智慧康养心电风险筛查平台 —— Nginx 反向代理示例配置
+# 适用：前端静态文件由 Nginx 直接托管，/api 与 /docs 反代到 FastAPI(Uvicorn)
+# 部署：将本文件放到 Nginx 的 conf/conf.d/ 或 include 进 nginx.conf，
+#       并把下方 __FRONTEND_DIST__、server_name 改成实际值后重载 nginx。
+# =====================================================================
+
+# 后端 FastAPI/Uvicorn 地址（默认本机 8000；多实例可用 upstream 做负载）
+upstream ecg_backend {
+    server 127.0.0.1:8000;
+    keepalive 32;
+}
+
+server {
+    listen       80;
+    server_name  _;   # 改成你的域名或服务器 IP，例如 ecg.example.com
+
+    # 前端生产构建产物目录（frontend/dist，npm run build:local 生成）
+    root  __FRONTEND_DIST__;          # 例如 D:/ECG-Auxiliary-Screening/frontend/dist 或 /opt/ecg/frontend/dist
+    index index.html;
+
+    # 上传/长推理请求体与超时放宽（心电分析含模型推理，可能耗时较长）
+    client_max_body_size 50m;
+    proxy_read_timeout   180s;
+    proxy_send_timeout   180s;
+
+    # ---- 后端接口 / API 文档 ----
+    location /api/ {
+        proxy_pass         http://ecg_backend;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   Connection        "";
+    }
+
+    location = /docs        { proxy_pass http://ecg_backend; proxy_set_header Host $host; }
+    location = /openapi.json{ proxy_pass http://ecg_backend; proxy_set_header Host $host; }
+
+    # ---- 静态资源长缓存（vite 产物带 hash 文件名）----
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # ---- SPA 前端路由回退：非文件路径一律交给 index.html ----
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

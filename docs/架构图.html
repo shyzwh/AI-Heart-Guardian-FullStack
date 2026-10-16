@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI护心镜 · 系统架构图</title>
+<style>
+  body{margin:0;background:#f5f7fa;font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:#1f2733;padding:24px;}
+  h1{font-size:20px;color:#0b2d7a;margin:0 0 4px;}
+  .sub{color:#5b6b7c;font-size:13px;margin-bottom:18px;}
+  .card{background:#fff;border:1px solid #e3e8ef;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(16,42,96,.06);}
+  .mermaid{display:flex;justify-content:center;}
+  .legend{margin-top:16px;font-size:13px;color:#5b6b7c;line-height:1.8;}
+  .legend b{color:#0b2d7a;}
+</style>
+</head>
+<body>
+  <h1>AI护心镜——智慧康养心电风险筛查平台 · 系统架构</h1>
+  <div class="sub">前后端分离：React SPA · FastAPI · 复用 src/ 算法层（不改动）</div>
+  <div class="card">
+    <pre class="mermaid">
+flowchart TB
+    subgraph FE["前端 frontend/ · React18 + Vite + TS + Tailwind · Zustand · axios · Router v6"]
+        direction LR
+        DOC["医生端<br/>心电分析 · 患者档案 · 报告查看/导出<br/>随访 · 统计看板 · 波形+SHAP四图(Plotly)"]
+        PAT["患者端<br/>我的报告 · 紧急呼救 · 居家康复<br/>健康打卡 · 政策资讯"]
+        PUB["公共层<br/>登录/注册(角色区分) · 顶部+侧边导航<br/>毛玻璃/纯色主题 · 响应式"]
+    end
+
+    subgraph BE["后端 backend/ · FastAPI + Uvicorn + SQLAlchemy2 + Pydantic v2"]
+        direction LR
+        CORE["core/<br/>config · security(JWT/bcrypt) · deps"]
+        API["api/<br/>auth · patients · ecg · shap<br/>reports · ai · wellness · policy"]
+        SVC["services/<br/>analysis_bridge · ai_service<br/>report_service · rehab_service"]
+        DBM["db/ models/ schemas/<br/>SQLite storage/ecg_web.db<br/>预留 PostgreSQL"]
+    end
+
+    subgraph AL["算法层 src/（原封不动复用）+ 资源"]
+        direction LR
+        PRE["data_loader → preprocess<br/>→ qrs_detect → feature_extract"]
+        INF["cnn_inference(1D-CNN)<br/>inference(XGBoost+SHAP)"]
+        RPT["report_gen · llm_client(GLM)<br/>knowledge/retriever(RAG) · models/ · uploads/"]
+    end
+
+    GLM["外部：GLM 大模型<br/>密钥仅环境变量 ZHIPU_API_KEY"]
+    TEL["外部：紧急呼救<br/>前端 tel: 唤起系统拨号（不代拨），未登录可用"]
+
+    FE -->|"HTTP /api/v1 · JWT Bearer"| BE
+    BE -->|"直接 import 复用，不改 src/"| AL
+    SVC --> GLM
+    PAT --> TEL
+    </pre>
+  </div>
+  <div class="legend">
+    <div>· <b>鉴权</b>：JWT access token + bcrypt；患者仅见本人档案/记录，医生仅见本人名下；SOS/政策为公开接口。</div>
+    <div>· <b>紧急呼救</b>：后端只返回联系人与 tel: 拨号串，拨号由前端唤起系统电话完成，系统不代拨。</div>
+    <div>· <b>SHAP 四图</b>：条形 / 蜂群 / 交互 / 决策；缺训练背景数据时全局类图表优雅降级，决策图始终可用。</div>
+  </div>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "default", flowchart: { curve: "basis" } });
+  </script>
+</body>
+</html>

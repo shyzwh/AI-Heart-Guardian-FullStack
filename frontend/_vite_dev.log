@@ -1,0 +1,241 @@
+﻿
+> miaoda-react-standard-webapp-app@0.1.0 dev
+> vite --port 31204 --host 127.0.0.1
+
+
+  [32m[1mVITE[22m v8.2.2[39m  [2mready in [0m[1m1694[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m31204[22m/[39m
+[2m17:00:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [optimizer] bundling dependencies...
+[2m17:02:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app.tsx, /src/components/AppLayout.tsx, /src/routes/RoleGuard.tsx, /src/pages/auth/LoginPage.tsx, /src/pages/doctor/FollowUpCreateDialog.tsx[22m
+[2m17:03:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app.tsx, /src/components/AppLayout.tsx, /src/routes/RoleGuard.tsx, /src/pages/auth/LoginPage.tsx, /src/pages/doctor/FollowUpCreateDialog.tsx[22m
+[2m17:03:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app.tsx, /src/components/AppLayout.tsx, /src/routes/RoleGuard.tsx, /src/pages/auth/LoginPage.tsx[22m
+node.exe : [2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg//waveform[39m
+所在位置 行:1 字符: 1
++ & "C:\Users\YANG\AppData\Local\Doubao\User Data\sandbox_runtime\bases ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m17:06:22[2...//waveform[39m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg//shap/summary[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg//shap/beeswarm[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg//shap/interaction[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg//shap/decision[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/reports/[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/reports//download?format=pdf[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/followups[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/patients[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:06:22[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:28[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/register[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:28[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/login[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:28[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/patients[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:28[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg/analyze[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:28[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/ecg//shap/decision[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:58[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/register[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:07:58[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/login[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m17:10:18[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/v1/auth/register[39m
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)
+[2m18:41:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m18:41:16[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] [0mAdjacent JSX elements must be wrapped in an enclosing tag.
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/app.tsx:138:5 [38;5;246m][0m
+     [38;5;246m│[0m
+ [38;5;246m138 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m<[38;5;249mT[0m[38;5;249mo[0m
+[38;5;249ma[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m [0m[38;5;249mr[0m[38;5;
+249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249mC[0m[38;5;249mo[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mr[
+0m[38;5;249ms[0m[38;5;249m=[0m[38;5;249m{[0m[38;5;249mf[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249ms[0m[38;
+5;249me[0m[38;5;249m}[0m[38;5;249m [0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249ms[0m[38;5;249mi[0m[38;5;249mt
+[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mt[0m[38;5;249mo[0m[3
+8;5;249mp[0m[38;5;249m-[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249
+mr[0m[38;5;249m"[0m[38;5;249m [0m[38;5;249m/[0m[38;5;249m>[0m
+ [38;5;240m    │[0m     ┬  
+ [38;5;240m    │[0m     ╰── 
+ [38;5;240m    │[0m 
+ [38;5;240m    │[0m [38;5;115mHelp[0m: Did you want a JSX fragment `<>...</>`?
+[38;5;246m─────╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mD:/桌面/ECG-Auxiliary-Screening/frontend/src/app.tsx[39m
+      at transformWithOxc (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/vite/dist/node/c
+hunks/node.js:4103:19)
+      at TransformPluginContext.transform (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/
+vite/dist/node/chunks/node.js:4174:26)
+      at EnvironmentPluginContainer.transform (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modu
+les/vite/dist/node/chunks/node.js:30932:51)
+      at async loadAndTransform (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/vite/dist/
+node/chunks/node.js:20671:26)
+      at async viteTransformMiddleware (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/vit
+e/dist/node/chunks/node.js:25205:20)
+[2m18:41:16[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] [0mAdjacent JSX elements must be wrapped in an enclosing tag.
+     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/app.tsx:138:5 [38;5;246m][0m
+     [38;5;246m│[0m
+ [38;5;246m138 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m<[38;5;249mT[0m[38;5;249mo[0m
+[38;5;249ma[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m [0m[38;5;249mr[0m[38;5;
+249mi[0m[38;5;249mc[0m[38;5;249mh[0m[38;5;249mC[0m[38;5;249mo[0m[38;5;249ml[0m[38;5;249mo[0m[38;5;249mr[
+0m[38;5;249ms[0m[38;5;249m=[0m[38;5;249m{[0m[38;5;249mf[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249ms[0m[38;
+5;249me[0m[38;5;249m}[0m[38;5;249m [0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249ms[0m[38;5;249mi[0m[38;5;249mt
+[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mt[0m[38;5;249mo[0m[3
+8;5;249mp[0m[38;5;249m-[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249
+mr[0m[38;5;249m"[0m[38;5;249m [0m[38;5;249m/[0m[38;5;249m>[0m
+ [38;5;240m    │[0m     ┬  
+ [38;5;240m    │[0m     ╰── 
+ [38;5;240m    │[0m 
+ [38;5;240m    │[0m [38;5;115mHelp[0m: Did you want a JSX fragment `<>...</>`?
+[38;5;246m─────╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mD:/桌面/ECG-Auxiliary-Screening/frontend/src/app.tsx[39m
+      at transformWithOxc (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/vite/dist/node/c
+hunks/node.js:4103:19)
+      at TransformPluginContext.transform (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/
+vite/dist/node/chunks/node.js:4174:26)
+      at EnvironmentPluginContainer.transform (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modu
+les/vite/dist/node/chunks/node.js:30932:51)
+      at async loadAndTransform (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/vite/dist/
+node/chunks/node.js:20671:26)
+      at async viteTransformMiddleware (file:///D:/%E6%A1%8C%E9%9D%A2/ECG-Auxiliary-Screening/frontend/node_modules/vit
+e/dist/node/chunks/node.js:25205:20)
+[2m18:41:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m18:48:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m18:48:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m18:48:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:21:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ShapCharts.tsx[22m
+[2m19:27:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ShapCharts.tsx[22m
+[2m19:27:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ShapCharts.tsx[22m
+[2m19:31:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:32:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:33:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:34:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:34:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:36:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:45:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m19:46:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/FollowUpsPage.tsx, /src/pages/doctor/FollowUpCreateDialog.tsx[22m
+[2m19:56:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m19:56:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m19:56:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m19:57:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/AppLayout.tsx[22m
+[2m19:58:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/auth/LoginPage.tsx[22m
+[2m19:58:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/auth/LoginPage.tsx[22m
+[2m19:58:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/auth/LoginPage.tsx[22m
+[2m20:00:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m20:01:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m20:02:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m20:04:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m20:05:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/common/SosPage.tsx, /src/index.css[22m
+[2m20:05:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/common/SosPage.tsx, /src/index.css[22m
+[2m20:06:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/common/SosPage.tsx, /src/index.css[22m
+[2m20:14:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AnalysisPage.tsx[22m
+[2m20:14:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AnalysisPage.tsx[22m
+[2m20:15:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/PatientsPage.tsx[22m
+[2m20:15:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/PatientsPage.tsx[22m
+[2m20:16:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/PatientsPage.tsx[22m
+[2m20:19:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/PatientsPage.tsx[22m
+[2m20:20:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m20:48:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/dialog.tsx[22m
+[2m20:48:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/dialog.tsx[22m
+[2m20:49:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/input.tsx[22m
+[2m20:49:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/select.tsx[22m
+[2m20:50:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/select.tsx[22m
+[2m20:51:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/label.tsx[22m
+[2m20:51:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/FollowUpCreateDialog.tsx[22m
+[2m20:52:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/FollowUpCreateDialog.tsx[22m
+[2m20:52:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ui/textarea.tsx[22m
+[2m21:00:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AiInsightPanel.tsx[22m
+[2m21:00:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AiInsightPanel.tsx[22m
+[2m21:07:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/AppLayout.tsx[22m
+[2m21:07:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/AppLayout.tsx[22m
+[2m21:07:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/AppLayout.tsx[22m
+[2m21:07:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m21:08:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m21:10:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m21:12:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AiInsightPanel.tsx[22m
+[2m21:12:19[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AiInsightPanel.tsx[22m
+[2m21:12:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/AiInsightPanel.tsx[22m
+[2m21:14:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [optimizer] bundling dependencies...
+[2m21:14:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m21:14:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mdependencies optimized: [33mreact-markdown, remark-gfm[32m[39m
+[2m21:14:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32moptimized dependencies changed. reloading[39m
+[2m21:16:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m21:22:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/common/PolicyPage.tsx, /src/pages/doctor/FollowUpCreateDialog.tsx[22m
+[2m21:25:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/common/PolicyPage.tsx[22m
+[2m21:27:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/common/PolicyPage.tsx[22m
+[2m21:33:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m21:34:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/common/PolicyPage.tsx[22m
+[2m21:34:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/common/PolicyFormDialog.tsx, /src/index.css[22m
+[2m21:36:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist/output/index.html[22m
+[2m21:53:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/doctor/FollowUpsPage.tsx, /src/pages/doctor/FollowUpCreateDialog.tsx, /src/pages/common/SosPage.tsx[22m
+[2m21:55:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m21:55:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m22:12:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m22:12:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m22:15:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m22:19:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m22:19:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app.tsx, /src/index.css[22m
+[2m22:21:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m22:23:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/patient/MyReportsPage.tsx[22m
+[2m22:23:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/patient/RehabPage.tsx[22m
+[2m22:23:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/patient/CheckInPage.tsx[22m
+[2m22:24:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/patient/CheckInPage.tsx[22m
+[2m22:25:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/patient/MyReportDetailPage.tsx[22m
+[2m22:26:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m22:26:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m22:26:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m22:26:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m22:34:52[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m22:34:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because lockfile has changed
+[2m22:34:53[22m [36m[1m[vite][22m[39m server restarted.
+[2m22:34:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [optimizer] bundling dependencies...
+[2m22:35:11[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m22:35:11[22m [36m[1m[vite][22m[39m server restarted.
+[2m22:35:30[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[31mfailed to load config from D:\桌面\ECG-Auxiliary-Screening\frontend\vite.config.ts[39m
+[2m22:35:30[22m [31m[1m[vite][22m[39m isLocalBuild is not defined
+[2m22:35:30[22m [31m[1m[vite][22m[39m server restart failed
+[2m22:35:51[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m22:35:51[22m [36m[1m[vite][22m[39m server restarted.
+[2m22:37:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist/output/index.html[22m
+[2m22:38:26[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m22:38:26[22m [36m[1m[vite][22m[39m server restarted.
+[2m22:38:34[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m22:38:35[22m [36m[1m[vite][22m[39m server restarted.
+[2m22:39:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist/index.html[22m
+[2m22:46:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist/index.html[22m
+[2m22:46:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdist/index.html[22m
