@@ -21,3 +21,6 @@ backup_*
 backup_app_*
 backup_ui_*
 *.pyc
+
+*.npy
+*.exe
