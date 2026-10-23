@@ -112,7 +112,7 @@ export async function createFollowUp(payload: {
   return resp.data;
 }
 
-export async function completeFollowUp(id: number): Promise<IFollowUp> {
-  const resp = await http.patch<IFollowUp>(`/followups/${id}/done`);
+export async function completeFollowUp(id: number, result: string): Promise<IFollowUp> {
+  const resp = await http.patch<IFollowUp>(`/followups/${id}/done`, { result });
   return resp.data;
 }

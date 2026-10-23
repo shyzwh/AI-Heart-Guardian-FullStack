@@ -6,7 +6,7 @@ from src.beat_segmenter import segment_beats
 from src.logger import logger
 
 
-def predict_abnormal_beats(signal, r_peaks, fs, model_path="models/cnn_model.h5"):
+def predict_abnormal_beats(signal, r_peaks, fs, model_path=""):
     # CNN推理：输入信号和R峰，输出异常心拍位置
     try:
         model_path = str(model_path).replace("\\", "/")

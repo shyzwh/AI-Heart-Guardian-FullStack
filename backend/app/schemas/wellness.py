@@ -94,6 +94,10 @@ class FollowUpCreate(BaseModel):
     content: str = Field("", max_length=500)
 
 
+class FollowUpComplete(BaseModel):
+    result: str = Field(..., min_length=1, max_length=2000)
+
+
 class FollowUpOut(BaseModel):
     id: int
     patient_id: int
@@ -102,6 +106,7 @@ class FollowUpOut(BaseModel):
     due_date: Optional[dt.datetime] = None
     status: str
     content: str
+    result: Optional[str] = None
     created_at: dt.datetime
     completed_at: Optional[dt.datetime] = None
 
@@ -146,4 +151,3 @@ class PolicyUpdate(BaseModel):
     content: Optional[str] = None
     cover_image: Optional[str] = Field(None, max_length=512)
     is_published: Optional[bool] = None
-

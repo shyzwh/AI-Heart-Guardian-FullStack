@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -38,6 +37,7 @@ interface IFormState {
   weight_kg: string;
   medication: string;
   note: string;
+  patient_username: string;
 }
 
 const EMPTY: IFormState = {
@@ -48,6 +48,7 @@ const EMPTY: IFormState = {
   weight_kg: '',
   medication: '',
   note: '',
+  patient_username: '',
 };
 
 export function PatientFormDialog({
@@ -66,6 +67,7 @@ export function PatientFormDialog({
           weight_kg: patient.weight_kg != null ? String(patient.weight_kg) : '',
           medication: patient.medication,
           note: patient.note,
+          patient_username: '',
         }
       : EMPTY,
   );
@@ -87,6 +89,7 @@ export function PatientFormDialog({
       weight_kg: form.weight_kg ? Number(form.weight_kg) : null,
       medication: form.medication.trim(),
       note: form.note.trim(),
+      patient_username: form.patient_username.trim(),
     };
     setSaving(true);
     try {
@@ -111,14 +114,13 @@ export function PatientFormDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{patient ? '编辑患者档案' : '新建患者档案'}</DialogTitle>
-          <DialogDescription>
-            档案信息用于心电报告与康养方案生成
-          </DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label htmlFor="p-name">姓名 *</Label>
+            <Label htmlFor="p-name">
+              姓名 <span className="text-destructive">*</span>
+            </Label>
             <Input id="p-name" value={form.name} onChange={(e) => set('name')(e.target.value)} />
           </div>
           <div className="space-y-1.5">
@@ -161,6 +163,14 @@ export function PatientFormDialog({
               type="number"
               value={form.weight_kg}
               onChange={(e) => set('weight_kg')(e.target.value)}
+            />
+          </div>
+          <div className="col-span-2 space-y-1.5">
+            <Label htmlFor="p-patient-username">绑定患者账号（选填）</Label>
+            <Input
+              id="p-patient-username"
+              value={form.patient_username}
+              onChange={(e) => set('patient_username')(e.target.value)}
             />
           </div>
           <div className="col-span-2 space-y-1.5">

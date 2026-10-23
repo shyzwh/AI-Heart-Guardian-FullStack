@@ -10,6 +10,8 @@ import {
   ClipboardCheck,
   Newspaper,
   GraduationCap,
+  MessageSquareText,
+  Sparkles,
 } from 'lucide-react';
 import type { Role } from '@/types';
 
@@ -25,6 +27,7 @@ export const DOCTOR_NAV: INavItem[] = [
   { path: '/doctor/patients', label: '患者档案', icon: Users },
   { path: '/doctor/reports', label: '报告中心', icon: FileText },
   { path: '/doctor/followups', label: '随访提醒', icon: CalendarClock },
+  { path: '/consultations', label: '在线咨询', icon: MessageSquareText },
   { path: '/doctor/dashboard', label: '统计看板', icon: LayoutDashboard },
   { path: '/cases', label: '病例教学', icon: GraduationCap },
   { path: '/policy', label: '政策资讯', icon: Newspaper },
@@ -33,6 +36,9 @@ export const DOCTOR_NAV: INavItem[] = [
 /** 患者端侧边导航（患者端主体在批次4，这里先提供结构）。 */
 export const PATIENT_NAV: INavItem[] = [
   { path: '/patient/reports', label: '我的报告', icon: HeartPulse },
+  { path: '/consultations', label: '在线咨询', icon: MessageSquareText },
+  { path: '/patient/ai-assistant', label: 'AI 智能问答', icon: Sparkles },
+  { path: '/patient/followups', label: '随访计划', icon: CalendarClock },
   { path: '/sos', label: '紧急呼救', icon: PhoneCall },
   { path: '/patient/rehab', label: '居家康复', icon: Dumbbell },
   { path: '/patient/checkin', label: '健康打卡', icon: ClipboardCheck },

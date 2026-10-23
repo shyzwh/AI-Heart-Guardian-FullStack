@@ -7,7 +7,7 @@
     "真实端到端耗时未能验证，仅提供模型批量推理耗时"
   ],
   "xgboost": {
-    "data_source": "D:\\桌面\\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统-最终版\\ECG-Auxiliary-Screening\\training_data.csv",
+    "data_source": "<local>\\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统-最终版\\ECG-Auxiliary-Screening\\training_data.csv",
     "label_rule": "training_data.csv 的 risk_label；脚本不重新生成标签",
     "split": "分层 80/20 留出，random_state=42；不是独立医生标注测试集",
     "status": "verified_on_available_holdout",
@@ -69,8 +69,8 @@
     }
   },
   "cnn": {
-    "data_source": "D:\\桌面\\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统-最终版\\ECG-Auxiliary-Screening\\cnn_beats_real.npy",
-    "label_source": "D:\\桌面\\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统-最终版\\ECG-Auxiliary-Screening\\cnn_labels_real.npy",
+    "data_source": "<local>\\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统-最终版\\ECG-Auxiliary-Screening\\cnn_beats_real.npy",
+    "label_source": "<local>\\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统-最终版\\ECG-Auxiliary-Screening\\cnn_labels_real.npy",
     "label_rule": "cnn_labels_real.npy 的 0/1 二分类标签；未提供心律失常细分类标签",
     "split": "分层 80/20 留出，random_state=42；不是按患者或记录独立划分",
     "arrhythmia_type_sensitivity": "未能验证：标签没有心律失常类型",

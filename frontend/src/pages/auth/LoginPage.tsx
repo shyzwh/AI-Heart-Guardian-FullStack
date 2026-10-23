@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,21 +26,37 @@ export default function LoginPage() {
   const { token, login, register } = useAuthStore();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [role, setRole] = useState<Role>('doctor');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    document.querySelectorAll<HTMLInputElement>('input').forEach((el) => {
+      el.value = '';
+    });
+  }, []);
 
   if (token) {
     return <Navigate to="/" replace />;
   }
 
-  const redirectFor = (r: Role) =>
-    (location.state as ILocationState | null)?.from ||
-    (r === 'doctor' ? '/doctor/analysis' : '/patient/reports');
+  const redirectFor = (r: Role) => {
+    const requestedPath = (location.state as ILocationState | null)?.from;
+    if (
+      requestedPath &&
+      requestedPath !== '/policy' &&
+      requestedPath !== '/login' &&
+      requestedPath !== '/'
+    ) {
+      return requestedPath;
+    }
+    return r === 'doctor' ? '/doctor/analysis' : '/patient/reports';
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const username = String(formData.get('username') ?? '');
+    const password = String(formData.get('password') ?? '');
+    const displayName = String(formData.get('displayName') ?? '');
     if (username.trim().length < 3) {
       toast.error('用户名至少 3 个字符');
       return;
@@ -71,30 +86,73 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[hsl(195_30%_95%)] via-background to-[hsl(187_40%_94%)]">
-      {/* 背景心电纹理，克制处理 */}
+    <div
+      style={{
+        display: 'flex',
+        width: '100vw',
+        height: '100vh',
+        margin: 0,
+        padding: 0,
+        overflow: 'hidden',
+      }}
+    >
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
-          backgroundImage:
-            'linear-gradient(90deg, hsl(187 65% 33%) 1px, transparent 1px), linear-gradient(hsl(187 65% 33%) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'flex-end',
+          overflow: 'hidden',
+          height: '100vh',
+          width: '100%',
+          backgroundImage: 'url(/assets/login-bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundColor: '#f8fafc',
+          color: '#fff',
         }}
-      />
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-10">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/15 to-teal-950/10" />
+        <div className="relative z-10 max-w-xl p-12">
+          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/30 bg-white/15 backdrop-blur">
             <Activity className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <p className="text-sm font-medium tracking-[0.2em] text-teal-100">
+            SMART CARDIAC CARE
+          </p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight">AI护心镜</h1>
+          <p className="mt-4 max-w-lg text-base leading-7 text-white/85">
+            智慧康养心电风险筛查平台，提供心电风险筛查与医患管理服务。
+          </p>
+        </div>
+      </div>
+
+      <main
+        style={{
+          display: 'flex',
+          width: '50%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflowY: 'auto',
+          backgroundColor: '#f8fafc',
+          padding: '2.5rem 2rem',
+        }}
+      >
+      <div className="w-full max-w-md">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg lg:hidden">
+            <Activity className="h-8 w-8" />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground lg:hidden">
             AI护心镜
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground lg:hidden">
             智慧康养心电风险筛查平台
           </p>
         </div>
 
-        <Card className="border-card-border shadow-xl backdrop-blur">
+        <Card className="border-card-border bg-white shadow-xl">
           <CardHeader>
             <Tabs
               value={mode}
@@ -115,7 +173,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate autoComplete="off" className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -145,36 +203,38 @@ export default function LoginPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="username">用户名</Label>
-                <Input
+                <input
                   id="username"
-                  autoComplete="username"
-                  placeholder="至少 3 个字符"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="text"
+                  autoComplete="new-password"
+                  name="username"
+                  placeholder="请输入用户名"
+                  className="file:text-foreground placeholder:text-slate-400 selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-10 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 md:text-sm enabled:hover:border-ring focus-visible:border-ring focus-visible:ring-ring/20 focus-visible:ring-[3px]"
                 />
               </div>
 
               {mode === 'register' && (
                 <div className="space-y-2">
                   <Label htmlFor="displayName">姓名（选填）</Label>
-                  <Input
+                  <input
                     id="displayName"
                     placeholder="用于界面展示"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    name="displayName"
+                    autoComplete="off"
+                    className="file:text-foreground placeholder:text-slate-400 selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-10 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 md:text-sm enabled:hover:border-ring focus-visible:border-ring focus-visible:ring-ring/20 focus-visible:ring-[3px]"
                   />
                 </div>
               )}
 
               <div className="space-y-2">
                 <Label htmlFor="password">密码</Label>
-                <Input
+                <input
                   id="password"
                   type="password"
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  placeholder="至少 6 位"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                  name="password"
+                  placeholder="请输入密码"
+                  className="file:text-foreground placeholder:text-slate-400 selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-10 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 md:text-sm enabled:hover:border-ring focus-visible:border-ring focus-visible:ring-ring/20 focus-visible:ring-[3px]"
                 />
               </div>
 
@@ -187,9 +247,11 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <p className="mt-4 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+            <p className="mt-4 flex items-start gap-1.5 text-xs text-slate-400">
               <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              本平台提供心电风险辅助筛查，结果仅供临床参考，不能替代医生诊断。
+              <span className="italic">
+                本系统为医疗辅助软件，分析结果不作为最终临床诊断依据。
+              </span>
             </p>
 
             <Link
@@ -202,6 +264,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </div>
+      </main>
     </div>
   );
 }

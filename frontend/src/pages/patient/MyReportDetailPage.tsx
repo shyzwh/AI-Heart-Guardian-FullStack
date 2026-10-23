@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft, FileText, FileType2, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, FileType2, Loader2, Info } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import type { IReport } from '@/types';
 import { RiskBadge } from '@/components/RiskBadge';
 import { WaveformChart } from '@/components/WaveformChart';
 import { ShapCharts } from '@/components/ShapCharts';
+import ReactMarkdown from 'react-markdown';
 
 export default function MyReportDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +19,7 @@ export default function MyReportDetailPage() {
   const recordId = Number(id);
   const [report, setReport] = useState<IReport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState<'' | 'txt' | 'pdf'>('');
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (!Number.isFinite(recordId)) {
@@ -32,17 +33,17 @@ export default function MyReportDetailPage() {
       .finally(() => setLoading(false));
   }, [recordId, navigate]);
 
-  const handleDownload = async (format: 'txt' | 'pdf') => {
-    setDownloading(format);
+  const handleDownload = async () => {
+    setDownloading(true);
     try {
-      const blob = await downloadReport(recordId, format);
+      const blob = await downloadReport(recordId, 'pdf');
       const base = report?.record_id || `report-${recordId}`;
-      saveBlob(blob, `${base}.${format}`);
-      toast.success(`${format.toUpperCase()} 报告已下载`);
+      saveBlob(blob, `${base}.pdf`);
+      toast.success('PDF 报告已下载');
     } catch (err) {
       toast.error(extractError(err, '报告导出失败'));
     } finally {
-      setDownloading('');
+      setDownloading(false);
     }
   };
 
@@ -66,12 +67,8 @@ export default function MyReportDetailPage() {
               <ArrowLeft className="mr-1 h-4 w-4" />
               返回
             </Button>
-            <Button variant="outline" size="sm" onClick={() => handleDownload('txt')} disabled={!!downloading}>
-              {downloading === 'txt' ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileText className="mr-1 h-4 w-4" />}
-              TXT
-            </Button>
-            <Button size="sm" onClick={() => handleDownload('pdf')} disabled={!!downloading}>
-              {downloading === 'pdf' ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileType2 className="mr-1 h-4 w-4" />}
+            <Button size="sm" onClick={() => void handleDownload()} disabled={downloading}>
+              {downloading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FileType2 className="mr-1 h-4 w-4" />}
               PDF
             </Button>
           </>
@@ -131,9 +128,9 @@ export default function MyReportDetailPage() {
             <CardTitle className="text-base">报告正文</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap rounded-lg border border-border bg-background/60 p-4 font-mono text-sm leading-relaxed text-foreground">
-              {report.report_text}
-            </pre>
+            <div className="prose prose-sm max-w-none prose-teal max-h-[420px] overflow-auto rounded-lg border border-border bg-background/60 p-4 text-foreground">
+              <ReactMarkdown>{report.report_text}</ReactMarkdown>
+            </div>
           </CardContent>
         </Card>
 

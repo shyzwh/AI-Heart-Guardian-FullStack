@@ -59,14 +59,27 @@ def create_patient(
     db: Session = Depends(get_db),
     doctor: User = Depends(require_roles("doctor")),
 ) -> PatientOut:
+    patient_username = (payload.patient_username or "").strip()
+    user_id = payload.user_id
+    if patient_username:
+        target = db.scalar(
+            select(User).where(
+                User.username == patient_username,
+                User.role == "patient",
+            )
+        )
+        if target is None:
+            raise HTTPException(status_code=400, detail="该患者账号未注册")
+        user_id = target.id
+
     # 若绑定患者账号，校验该账号确实是 patient 角色
-    if payload.user_id is not None:
-        target = db.get(User, payload.user_id)
+    if user_id is not None and not patient_username:
+        target = db.get(User, user_id)
         if target is None or target.role != "patient":
             raise HTTPException(status_code=400, detail="绑定的用户不存在或不是患者角色")
     patient = Patient(
         doctor_id=doctor.id,
-        user_id=payload.user_id,
+        user_id=user_id,
         name=payload.name.strip(),
         gender=payload.gender,
         age=payload.age,
@@ -133,6 +146,17 @@ def update_patient(
 ) -> PatientOut:
     patient = _get_owned_patient(db, patient_id, doctor.id)
     data = payload.model_dump(exclude_unset=True)
+    patient_username = (data.pop("patient_username", None) or "").strip()
+    if patient_username:
+        target = db.scalar(
+            select(User).where(
+                User.username == patient_username,
+                User.role == "patient",
+            )
+        )
+        if target is None:
+            raise HTTPException(status_code=400, detail="该患者账号未注册")
+        data["user_id"] = target.id
     if "past_history" in data and data["past_history"] is not None:
         patient.past_history = json.dumps(data.pop("past_history"), ensure_ascii=False)
     if "user_id" in data:

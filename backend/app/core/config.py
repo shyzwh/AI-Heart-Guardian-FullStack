@@ -69,7 +69,7 @@ class Settings:
     SERVE_FRONTEND: bool = _get_bool("SERVE_FRONTEND", True)
 
     XGB_MODEL_PATH: str = (MODEL_DIR / "ecg_risk_xgb_model.json").as_posix()
-    CNN_MODEL_PATH: str = (MODEL_DIR / "cnn_model.h5").as_posix()
+    CNN_MODEL_PATH: str = os.getenv("CNN_MODEL_PATH", "").strip()
     SCALER_PATH: str = (MODEL_DIR / "ecg_scaler.pkl").as_posix()
 
     # 允许上传的扩展名

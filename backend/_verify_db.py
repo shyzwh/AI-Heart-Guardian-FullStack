@@ -1,6 +1,8 @@
 import sqlite3
+from pathlib import Path
 
-c = sqlite3.connect(r"D:\桌面\ECG-Auxiliary-Screening\storage\ecg_web.db")
+database_path = Path(__file__).resolve().parents[1] / "storage" / "ecg_web.db"
+c = sqlite3.connect(database_path)
 tables = [r[0] for r in c.execute("select name from sqlite_master where type='table' order by name")]
 print("表:", tables)
 for t in ["users", "patients", "ecg_records", "followups", "emergency_contacts", "health_checkins", "rehab_plans", "policy_articles"]:

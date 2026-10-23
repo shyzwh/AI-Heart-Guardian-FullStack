@@ -4,7 +4,6 @@ import { CalendarDays } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -90,11 +89,12 @@ export function FollowUpCreateDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>新建随访提醒</DialogTitle>
-          <DialogDescription>为患者设置一次复查或健康随访</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label>患者</Label>
+            <Label>
+              患者 <span className="text-destructive">*</span>
+            </Label>
             <Select value={patientId} onValueChange={(v) => { setPatientId(v); setRecordId('none'); }}>
               <SelectTrigger>
                 <SelectValue placeholder="选择患者" />

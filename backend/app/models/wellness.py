@@ -36,6 +36,7 @@ class FollowUp(Base):
     due_date: Mapped[dt.datetime | None] = mapped_column(DateTime, nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(16), default="pending")  # pending/done/overdue
     content: Mapped[str] = mapped_column(Text, default="")
+    result: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime, server_default=func.now())
     completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime, nullable=True)
 

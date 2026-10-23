@@ -128,7 +128,7 @@ export default function AnalysisPage() {
                 className="flex w-full items-center gap-1.5 rounded-lg border border-warning/30 bg-warning/10 px-2.5 py-2 text-left text-xs font-medium text-warning transition-colors hover:bg-warning/15"
               >
                 <UserPlus className="h-3.5 w-3.5 shrink-0" />
-                还没有患者档案？点这里新建后，即可开始分析
+                新建患者档案
               </button>
             )}
           </div>

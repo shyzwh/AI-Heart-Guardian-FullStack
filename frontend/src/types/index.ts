@@ -51,6 +51,7 @@ export interface IPatientPayload {
   medication?: string;
   note?: string;
   user_id?: number | null;
+  patient_username?: string;
 }
 
 export type RiskLevel = '低危' | '中危' | '高危' | string;
@@ -131,6 +132,7 @@ export interface IFollowUp {
   due_date: string | null;
   status: string;
   content: string;
+  result: string | null;
   created_at: string;
   completed_at: string | null;
 }

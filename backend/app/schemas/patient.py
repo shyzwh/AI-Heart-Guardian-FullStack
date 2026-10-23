@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -21,6 +21,7 @@ class PatientCreate(BaseModel):
     note: str = Field(default="", max_length=1024)
     # 可绑定已注册的患者账号 id（可选）
     user_id: int | None = None
+    patient_username: Optional[str] = None
 
 
 class PatientUpdate(BaseModel):
@@ -34,6 +35,7 @@ class PatientUpdate(BaseModel):
     medication: str | None = Field(default=None, max_length=512)
     note: str | None = Field(default=None, max_length=1024)
     user_id: int | None = None
+    patient_username: Optional[str] = None
 
 
 class PatientOut(BaseModel):

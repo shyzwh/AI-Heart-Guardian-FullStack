@@ -19,6 +19,9 @@ import MyReportsPage from '@/pages/patient/MyReportsPage';
 import MyReportDetailPage from '@/pages/patient/MyReportDetailPage';
 import RehabPage from '@/pages/patient/RehabPage';
 import CheckInPage from '@/pages/patient/CheckInPage';
+import ConsultationsPage from '@/pages/common/ConsultationsPage';
+import AiAssistantPage from '@/pages/patient/AiAssistantPage';
+import PatientFollowUpsPage from '@/pages/patient/FollowUpsPage';
 
 function RootRedirect() {
   const role = useAuthStore((s) => s.role);
@@ -132,8 +135,21 @@ export default function App() {
             <RoleGuard allow={['patient']}><CheckInPage /></RoleGuard>
           }
         />
+        <Route
+          path="patient/ai-assistant"
+          element={
+            <RoleGuard allow={['patient']}><AiAssistantPage /></RoleGuard>
+          }
+        />
+        <Route
+          path="patient/followups"
+          element={
+            <RoleGuard allow={['patient']}><PatientFollowUpsPage /></RoleGuard>
+          }
+        />
 
         {/* 政策资讯：医生 / 患者共用 */}
+        <Route path="consultations" element={<ConsultationsPage />} />
         <Route path="policy" element={<PolicyPage />} />
 
         {/* 病例教学：医生 / 患者共用 */}

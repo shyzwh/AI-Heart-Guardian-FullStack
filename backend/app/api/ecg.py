@@ -20,6 +20,7 @@ from app.core.config import settings
 from app.core.deps import get_current_user, require_roles
 from app.db.database import get_db
 from app.models.ecg_record import EcgRecord
+from app.models.notification import Notification
 from app.models.patient import Patient
 from app.models.user import User
 from app.schemas.ecg import EcgRecordOut, EcgRecordSummary
@@ -120,6 +121,24 @@ def analyze(
         status="analysis_ok",
     )
     db.add(record)
+    if result["risk_level"] == "高危":
+        db.add(
+            Notification(
+                recipient_id=patient.doctor_id,
+                title="高危心电筛查结果",
+                content=f"患者 {patient.name} 的心电筛查结果为高危，请及时查看报告。",
+                notification_type="risk_alert",
+            )
+        )
+        if patient.user_id is not None:
+            db.add(
+                Notification(
+                    recipient_id=patient.user_id,
+                    title="心电筛查风险提醒",
+                    content="您的心电筛查结果提示高风险，请联系医生进一步评估。",
+                    notification_type="risk_alert",
+                )
+            )
     db.commit()
     db.refresh(record)
     return record

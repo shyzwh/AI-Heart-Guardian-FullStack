@@ -13,7 +13,7 @@ DEFAULT_CONFIG = {
     "low_confidence_threshold": 0.8,
     "default_duration_sec": 30,
     "model_path": "models/ecg_risk_xgb_model.json",
-    "cnn_model_path": "models/cnn_model.h5",
+    "cnn_model_path": "",
     "scaler_path": "models/ecg_scaler.pkl",
     "data_dir": "data/mitbih/mit-bih-arrhythmia-database-1.0.0",
     "cnn_beats_path": "cnn_beats.npy",

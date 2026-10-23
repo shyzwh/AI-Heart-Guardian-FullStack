@@ -196,7 +196,7 @@ export default function PatientsPage() {
       />
 
       <AlertDialog open={!!deleting} onOpenChange={(v) => !v && setDeleting(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white border shadow-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>删除患者档案</AlertDialogTitle>
             <AlertDialogDescription>

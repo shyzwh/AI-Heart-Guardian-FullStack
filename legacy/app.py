@@ -713,7 +713,7 @@ def settings_page(config):
         with st.container(border=True):
             render_section_title("模型路径", "◉")
             model_path = st.text_input("XGBoost 模型路径", config.get("model_path", "models/ecg_risk_xgb_model.json"))
-            cnn_model_path = st.text_input("CNN 模型路径", config.get("cnn_model_path", "models/cnn_model.h5"))
+            cnn_model_path = st.text_input("CNN 模型路径", config.get("cnn_model_path", ""))
             show_shap = st.checkbox("显示 SHAP 图", value=config.get("show_shap", True))
 
         st.divider()

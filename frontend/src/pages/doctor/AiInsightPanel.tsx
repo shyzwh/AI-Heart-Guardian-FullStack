@@ -147,7 +147,7 @@ export function AiInsightPanel({ recordId }: { recordId: number }) {
 
   const ask = async () => {
     if (!question.trim()) {
-      toast.error('请输入问题');
+      toast.error('请输入要发送的问题');
       return;
     }
     setBusy('ask');
@@ -208,7 +208,7 @@ export function AiInsightPanel({ recordId }: { recordId: number }) {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <MessageCircleQuestion className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">向 AI 提问</span>
+            <span className="text-sm font-medium">AI 智能问答</span>
           </div>
           <Textarea
             placeholder="如：该患者的 QT 间期是否需要关注？"
@@ -218,7 +218,7 @@ export function AiInsightPanel({ recordId }: { recordId: number }) {
           <div className="flex justify-end">
             <Button size="sm" onClick={ask} disabled={busy === 'ask'}>
               {busy === 'ask' && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
-              提问
+              发送问题
             </Button>
           </div>
           {answer && (

@@ -2,6 +2,8 @@
 from app.models.user import User
 from app.models.patient import Patient
 from app.models.ecg_record import EcgRecord
+from app.models.consultation import Consultation, ConsultationMessage
+from app.models.notification import Notification
 from app.models.wellness import (
     EmergencyContact,
     FollowUp,
@@ -14,6 +16,9 @@ __all__ = [
     "User",
     "Patient",
     "EcgRecord",
+    "Consultation",
+    "ConsultationMessage",
+    "Notification",
     "FollowUp",
     "EmergencyContact",
     "HealthCheckIn",

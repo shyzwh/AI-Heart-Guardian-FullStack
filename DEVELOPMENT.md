@@ -203,7 +203,7 @@ P_amp, T_amp, RR_mean, RR_std, SDNN, RMSSD
 
 负责 CNN 异常心拍推理。
 
-#### `predict_abnormal_beats(signal, r_peaks, fs, model_path="models/cnn_model.h5")`
+#### `predict_abnormal_beats(signal, r_peaks, fs, model_path="")`
 
 - 参数：信号、R 峰位置、采样率和模型路径。
 - 返回：`(status, abnormal_positions, message)`。
@@ -364,7 +364,7 @@ P_amp, T_amp, RR_mean, RR_std, SDNN, RMSSD
 - 返回：Keras 模型。
 - 功能：构建包含多层 `Conv1D`、池化、全局平均池化、全连接层和 Sigmoid 输出的二分类模型。
 
-#### `train_cnn(beats, labels, model_path="models/cnn_model.h5")`
+#### `train_cnn(beats, labels, model_path="")`
 
 - 参数：二维心拍数组、0/1 标签和保存路径。
 - 返回：`(status, accuracy, message)`。
@@ -434,7 +434,7 @@ CNN 分支从 R 峰位置并行展开：
 | `risk_threshold_high` | `0.7` | 高危阈值，通常为 0 到 1 的数值，建议大于中危阈值 |
 | `default_duration_sec` | `30` | 默认分析时长，单位秒；当前主流程未完全使用 |
 | `model_path` | `models/ecg_risk_xgb_model.json` | XGBoost 模型路径 |
-| `cnn_model_path` | `models/cnn_model.h5` | CNN 模型路径 |
+| `cnn_model_path` | `""` | 未配置 CNN 模型路径 |
 | `scaler_path` | `models/ecg_scaler.pkl` | 特征标准化器路径 |
 | `data_dir` | `data/mitbih/mit-bih-arrhythmia-database-1.0.0` | MIT-BIH 数据目录 |
 | `cnn_beats_path` | `cnn_beats.npy` | 基础 CNN 心拍数据路径 |
@@ -563,10 +563,6 @@ Batch Size：32
 
 #### 保存格式
 
-```text
-models/cnn_model.h5
-```
-
 ## 6. 扩展开发指南
 
 ### 6.1 新增特征
@@ -688,10 +684,6 @@ python src/test_full_pipeline.py
 ### 7.6 CNN 加载失败
 
 确认以下文件存在：
-
-```text
-models/cnn_model.h5
-```
 
 并检查 TensorFlow、心拍长度以及输入形状 `(samples, beat_length, 1)` 是否匹配。
 

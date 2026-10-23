@@ -52,19 +52,21 @@ def init_db() -> None:
 def _ensure_sqlite_columns() -> None:
     """对已存在的 SQLite 表做幂等补列（create_all 不会修改既有表结构）。
 
-    当前需要补齐：ecg_records.shap_visualizations。新增列均可空，历史行填 NULL。
+    当前需要补齐：ecg_records.shap_visualizations 和 followups.result。
     """
     if not settings.DATABASE_URL.startswith("sqlite"):
         return
     from sqlalchemy import inspect, text
 
     inspector = inspect(engine)
-    try:
+    tables = set(inspector.get_table_names())
+    if "ecg_records" in tables:
         existing = {col["name"] for col in inspector.get_columns("ecg_records")}
-    except Exception:
-        return
-    if "ecg_records" not in inspector.get_table_names():
-        return
-    if "shap_visualizations" not in existing:
-        with engine.begin() as conn:
-            conn.execute(text("ALTER TABLE ecg_records ADD COLUMN shap_visualizations JSON"))
+        if "shap_visualizations" not in existing:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE ecg_records ADD COLUMN shap_visualizations JSON"))
+    if "followups" in tables:
+        followup_columns = {col["name"] for col in inspector.get_columns("followups")}
+        if "result" not in followup_columns:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE followups ADD COLUMN result TEXT"))

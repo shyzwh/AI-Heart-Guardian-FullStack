@@ -51,8 +51,7 @@ def generate_plan_fields(patient: Patient, record: EcgRecord | None) -> dict:
             "duration_min": duration,
             "frequency": "每周3-4次，隔天进行，心率平稳后再小幅加量",
             "guidance": (
-                "以放松、调息为主，推荐简化太极拳或平地慢走；热身与放松各5分钟，"
-                "随身携带常用药物与联系卡片，最好有人陪同。"
+                "选择低强度太极拳或平地慢走；运动前后各热身与放松5分钟。"
             ),
             "cautions": (
                 "避免晨起低温时段、饱餐后立即运动；出现胸闷、明显心悸、头晕立即停止并就医，"

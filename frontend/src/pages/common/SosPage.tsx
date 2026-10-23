@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Activity,
+  ArrowLeft,
   Phone,
   PhoneCall,
   Plus,
@@ -56,6 +57,7 @@ function isValidPhone(phone: string): boolean {
 }
 
 export default function SosPage() {
+  const navigate = useNavigate();
   const { role, user, hydrated, logout } = useAuthStore();
   const isPatient = role === 'patient';
 
@@ -195,6 +197,15 @@ export default function SosPage() {
     <div className="min-h-screen bg-background">
       {/* 顶部品牌条 */}
       <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-border/70 bg-background/85 px-4 backdrop-blur-md">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/login')}
+          aria-label="返回登录页"
+        >
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          返回
+        </Button>
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <Activity className="h-4.5 w-4.5" />
         </div>
@@ -211,9 +222,7 @@ export default function SosPage() {
               </Button>
             </>
           ) : (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/login">登录 / 返回</Link>
-            </Button>
+            <span className="text-xs text-muted-foreground">紧急呼救</span>
           )}
         </div>
       </header>
@@ -279,7 +288,7 @@ export default function SosPage() {
               <div className="flex flex-col items-center gap-2 py-10 text-center">
                 <Phone className="h-8 w-8 text-muted-foreground/50" />
                 <p className="text-sm text-muted-foreground">
-                  还没有紧急联系人，建议至少添加 1 位家人或照护者。
+                  暂无紧急联系人，至少添加一位联系人。
                 </p>
                 <Button size="sm" variant="outline" onClick={openCreate} className="mt-1 gap-1.5">
                   <Plus className="h-4 w-4" />
@@ -361,7 +370,9 @@ export default function SosPage() {
           </DialogHeader>
           <div className="space-y-4 py-1">
             <div className="space-y-1.5">
-              <Label htmlFor="sos-name">姓名</Label>
+              <Label htmlFor="sos-name">
+                姓名 <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="sos-name"
                 value={form.name}
@@ -381,7 +392,9 @@ export default function SosPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="sos-phone">电话</Label>
+              <Label htmlFor="sos-phone">
+                电话 <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="sos-phone"
                 inputMode="tel"

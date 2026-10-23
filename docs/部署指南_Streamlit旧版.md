@@ -62,7 +62,6 @@ requirements.txt
 config/cases.json
 config/suggestions.json
 knowledge/ecg_diseases.json
-models/cnn_model.h5
 models/ecg_risk_xgb_model.json
 training_data.csv
 cnn_beats_real.npy

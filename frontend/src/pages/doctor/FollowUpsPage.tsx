@@ -6,6 +6,15 @@ import { PageHeader } from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -37,6 +46,9 @@ export default function FollowUpsPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'pending' | 'done' | 'all'>('pending');
   const [createOpen, setCreateOpen] = useState(false);
+  const [completing, setCompleting] = useState<IFollowUp | null>(null);
+  const [result, setResult] = useState('');
+  const [savingResult, setSavingResult] = useState(false);
   // 用 initializer 取一次当前时刻，避免 render 期直接调用 Date.now()
   const [nowTs] = useState(() => Date.now());
 
@@ -68,13 +80,22 @@ export default function FollowUpsPage() {
   const overdue = (f: IFollowUp) =>
     f.status !== 'done' && f.due_date && new Date(f.due_date).getTime() < nowTs;
 
-  const handleDone = async (f: IFollowUp) => {
+  const handleDone = async () => {
+    if (!completing || !result.trim()) {
+      toast.error('请填写随访结果');
+      return;
+    }
+    setSavingResult(true);
     try {
-      const updated = await completeFollowUp(f.id);
-      setItems((prev) => prev.map((x) => (x.id === f.id ? updated : x)));
+      const updated = await completeFollowUp(completing.id, result.trim());
+      setItems((prev) => prev.map((x) => (x.id === completing.id ? updated : x)));
       toast.success('随访已完成');
+      setCompleting(null);
+      setResult('');
     } catch (err) {
       toast.error(extractError(err, '操作失败'));
+    } finally {
+      setSavingResult(false);
     }
   };
 
@@ -137,6 +158,11 @@ export default function FollowUpsPage() {
                       </TableCell>
                       <TableCell className="max-w-[320px]">
                         <span className="block truncate">{f.content || '—'}</span>
+                        {f.result && (
+                          <span className="mt-1 block truncate text-xs text-muted-foreground">
+                            随访结果：{f.result}
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         {f.status === 'done' ? (
@@ -149,7 +175,14 @@ export default function FollowUpsPage() {
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-right">
                         {f.status !== 'done' && (
-                          <Button variant="outline" size="sm" onClick={() => handleDone(f)}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setCompleting(f);
+                              setResult('');
+                            }}
+                          >
                             <CheckCircle2 className="mr-1 h-4 w-4" />
                             标记完成
                           </Button>
@@ -165,6 +198,46 @@ export default function FollowUpsPage() {
       </Card>
 
       <FollowUpCreateDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={load} />
+      <Dialog
+        open={!!completing}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCompleting(null);
+            setResult('');
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>填写随访结果</DialogTitle>
+            <DialogDescription>
+              请记录本次随访情况，患者可以在随访页面查看。
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={result}
+            maxLength={2000}
+            onChange={(event) => setResult(event.target.value)}
+            placeholder="填写随访沟通结果或后续建议"
+            className="min-h-28"
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCompleting(null);
+                setResult('');
+              }}
+              type="button"
+            >
+              取消
+            </Button>
+            <Button onClick={() => void handleDone()} disabled={savingResult || !result.trim()}>
+              {savingResult ? '保存中…' : '确认完成'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

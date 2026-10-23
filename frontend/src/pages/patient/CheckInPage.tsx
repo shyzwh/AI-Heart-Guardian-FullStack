@@ -134,7 +134,7 @@ export default function CheckInPage() {
             <HeartPulse className="h-10 w-10 text-muted-foreground/50" />
             <p className="text-sm font-medium text-foreground">尚未建立健康档案</p>
             <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
-              请联系主治医生完成建档后，即可每日打卡记录症状、心率、血压与心情。
+              当前账号未关联患者档案。
             </p>
           </CardContent>
         </Card>
@@ -271,7 +271,7 @@ export default function CheckInPage() {
             {records.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-14 text-muted-foreground">
                 <CalendarCheck2 className="h-9 w-9 opacity-40" />
-                <p className="text-sm">还没有打卡记录，今天开始第一次打卡吧</p>
+                <p className="text-sm">暂无打卡记录</p>
               </div>
             ) : (
               <ol className="relative space-y-4 border-l border-border pl-5">

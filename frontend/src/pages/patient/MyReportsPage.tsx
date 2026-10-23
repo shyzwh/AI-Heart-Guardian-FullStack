@@ -44,7 +44,9 @@ export default function MyReportsPage() {
         setNoProfile(false);
         return listRecords();
       })
-      .then(setRecords)
+      .then((loadedRecords) => {
+        setRecords(loadedRecords);
+      })
       .catch((err) => {
         const status = (err as { response?: { status?: number } })?.response?.status;
         if (status === 404) {
@@ -84,7 +86,7 @@ export default function MyReportsPage() {
             <HeartPulse className="h-10 w-10 text-muted-foreground/50" />
             <p className="text-sm font-medium text-foreground">尚未建立健康档案</p>
             <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
-              您的账号还没有关联患者档案，因此暂无报告。请联系您的主治医生在「患者档案」中为您建档并完成心电筛查后，即可在此查看报告。
+              当前账号未关联患者档案。
             </p>
           </CardContent>
         </Card>
@@ -127,7 +129,7 @@ export default function MyReportsPage() {
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
             <FileText className="h-9 w-9 opacity-40" />
-            <p className="text-sm">{records.length === 0 ? '暂无心电报告，请在完成筛查后查看' : '没有符合条件的报告'}</p>
+            <p className="text-sm">{records.length === 0 ? '暂无心电报告' : '未查询到符合条件的报告'}</p>
           </CardContent>
         </Card>
       ) : (

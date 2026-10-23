@@ -77,7 +77,6 @@ ECG-Auxiliary-Screening/
 ├── docs/开发日志.md
 ├── logs/
 ├── models/
-│   ├── cnn_model.h5
 │   ├── ecg_risk_xgb_model.json
 │   └── ecg_scaler.pkl
 ├── reports/
@@ -116,7 +115,7 @@ ECG-Auxiliary-Screening/
 ### Windows 安装
 
 ```powershell
-cd "D:\桌面\王涵—AI 护心镜—基于深度学习异常定位与可解释XGBoost 的心电风险辅助筛查系统\ECG-Auxiliary-Screening"
+cd <项目目录>
 
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -226,9 +225,7 @@ CNN 输入为以 R 峰为中心切分的固定长度心拍，默认使用 R 峰�
 
 模型结构包含多层 `Conv1D`、`MaxPooling1D`、`GlobalAveragePooling1D`、全连接层和 Sigmoid 输出层。模型保存为：
 
-```text
-models/cnn_model.h5
-```
+`cnn_model_path` 默认为空，旧版 Streamlit 可在配置中填写。FastAPI 后端通过 `CNN_MODEL_PATH` 环境变量指定 CNN 模型文件，未设置时不预置模型路径。
 
 ## 部署方式
 

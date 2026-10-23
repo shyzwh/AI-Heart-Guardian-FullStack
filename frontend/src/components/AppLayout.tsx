@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth';
 import { useSurfaceStore, type SurfaceMode } from '@/store/surface';
 import { navForRole } from '@/routes/navItems';
+import { NotificationMenu } from '@/components/NotificationMenu';
+import { AiMascot } from '@/components/AiMascot';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,80 +96,95 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
       {/* 顶部导航 */}
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/70 bg-background/80 px-4 backdrop-blur-md">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden"
-          onClick={() => setMobileOpen(true)}
-          aria-label="打开导航"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center gap-2 lg:hidden">
-          <Activity className="h-5 w-5 text-primary" />
-          <span className="text-sm font-semibold">AI护心镜</span>
-        </div>
-        <span className="hidden text-sm text-muted-foreground lg:block">
-          智慧康养心电风险筛查平台
-        </span>
+      <header
+        className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/20 bg-cover bg-center px-4 text-white"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(2, 44, 45, 0.58), rgba(2, 44, 45, 0.58)), url('/assets/medical-banner.jpg')",
+        }}
+      >
+        <div className="relative z-10 flex w-full items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/20 hover:text-white lg:hidden"
+            onClick={() => setMobileOpen(true)}
+            aria-label="打开导航"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <Activity className="h-5 w-5 text-white" />
+            <span className="text-sm font-semibold text-white">AI护心镜</span>
+          </div>
 
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                {(() => {
-                  const S = SURFACE_OPTIONS.find((o) => o.value === mode) ?? SURFACE_OPTIONS[0];
-                  return (
-                    <>
-                      <S.icon className="h-4 w-4" />
-                      <span className="hidden sm:inline">{S.label}</span>
-                    </>
-                  );
-                })()}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>界面质感</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {SURFACE_OPTIONS.map((o) => (
-                <DropdownMenuItem key={o.value} onClick={() => setMode(o.value)}>
-                  <o.icon className="mr-2 h-4 w-4" />
-                  {o.label}
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                >
+                  {(() => {
+                    const S = SURFACE_OPTIONS.find((o) => o.value === mode) ?? SURFACE_OPTIONS[0];
+                    return (
+                      <>
+                        <S.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{S.label}</span>
+                      </>
+                    );
+                  })()}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>界面质感</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {SURFACE_OPTIONS.map((o) => (
+                  <DropdownMenuItem key={o.value} onClick={() => setMode(o.value)}>
+                    <o.icon className="mr-2 h-4 w-4" />
+                    {o.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <NotificationMenu />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-white hover:bg-white/20 hover:text-white"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-xs font-medium text-white">
+                    {(displayName || role || '?').slice(0, 1)}
+                  </span>
+                  <span className="hidden max-w-24 truncate text-white sm:inline">
+                    {displayName || (role === 'doctor' ? '医生' : '患者')}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {role === 'doctor' ? '医生账号' : '患者账号'}
+                  {displayName ? ` · ${displayName}` : ''}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  退出登录
                 </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
-                  {(displayName || role || '?').slice(0, 1)}
-                </span>
-                <span className="hidden max-w-24 truncate sm:inline">
-                  {displayName || (role === 'doctor' ? '医生' : '患者')}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>
-                {role === 'doctor' ? '医生账号' : '患者账号'}
-                {displayName ? ` · ${displayName}` : ''}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
-                退出登录
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
       <div className="flex">
         {/* 桌面侧边导航 */}
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
+        <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 border-r border-sidebar-border bg-sidebar lg:block">
           {sideContent}
         </aside>
 
@@ -200,6 +217,7 @@ export default function AppLayout() {
           </div>
         </main>
       </div>
+      {role === 'patient' && <AiMascot />}
     </div>
   );
 }

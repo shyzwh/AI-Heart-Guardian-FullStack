@@ -22,7 +22,19 @@ _root_str = str(PROJECT_ROOT)
 if _root_str not in sys.path:
     sys.path.insert(0, _root_str)
 
-from app.api import ai, auth, ecg, patients, policy, reports, shap, system, wellness  # noqa: E402
+from app.api import (  # noqa: E402
+    ai,
+    auth,
+    consultations,
+    ecg,
+    notifications,
+    patients,
+    policy,
+    reports,
+    shap,
+    system,
+    wellness,
+)
 from app.db.database import init_db  # noqa: E402
 
 app = FastAPI(
@@ -49,6 +61,8 @@ app.include_router(reports.router, prefix=API_PREFIX)
 app.include_router(ai.router, prefix=API_PREFIX)
 app.include_router(wellness.router, prefix=API_PREFIX)
 app.include_router(policy.router, prefix=API_PREFIX)
+app.include_router(consultations.router, prefix=API_PREFIX)
+app.include_router(notifications.router, prefix=API_PREFIX)
 
 
 @app.on_event("startup")

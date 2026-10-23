@@ -17,6 +17,7 @@ from app.core.deps import get_current_user, get_current_user_optional, require_r
 from app.db.database import get_db
 from app.models.ecg_record import EcgRecord
 from app.models.patient import Patient
+from app.models.notification import Notification
 from app.models.user import User
 from app.models.wellness import (
     EmergencyContact,
@@ -30,6 +31,7 @@ from app.schemas.wellness import (
     ContactCreate,
     ContactOut,
     FollowUpCreate,
+    FollowUpComplete,
     FollowUpOut,
     RehabGenerateRequest,
     RehabOut,
@@ -347,7 +349,7 @@ def create_followup(
     db: Session = Depends(get_db),
     doctor: User = Depends(require_roles("doctor")),
 ) -> FollowUp:
-    _get_patient_or_403(db, payload.patient_id, doctor)
+    patient = _get_patient_or_403(db, payload.patient_id, doctor)
     followup = FollowUp(
         patient_id=payload.patient_id,
         doctor_id=doctor.id,
@@ -357,6 +359,15 @@ def create_followup(
         status="pending",
     )
     db.add(followup)
+    if patient.user_id is not None:
+        db.add(
+            Notification(
+                recipient_id=patient.user_id,
+                title="收到新的随访计划",
+                content=payload.content or "已安排新的随访计划，请查看随访计划页。",
+                notification_type="followup",
+            )
+        )
     db.commit()
     db.refresh(followup)
     return followup
@@ -365,6 +376,7 @@ def create_followup(
 @router.patch("/followups/{followup_id}/done", response_model=FollowUpOut)
 def complete_followup(
     followup_id: int,
+    payload: FollowUpComplete,
     db: Session = Depends(get_db),
     doctor: User = Depends(require_roles("doctor")),
 ) -> FollowUp:
@@ -372,6 +384,7 @@ def complete_followup(
     if followup is None or followup.doctor_id != doctor.id:
         raise HTTPException(status_code=404, detail="随访不存在或无权操作")
     followup.status = "done"
+    followup.result = payload.result.strip()
     followup.completed_at = dt.datetime.now()
     db.commit()
     db.refresh(followup)
