@@ -144,7 +144,7 @@ export default function SosPage() {
     try {
       // 编辑 = 删除旧联系人 + 用新内容重建（后端未提供 PUT，匿名/本人范围一致）
       if (editing) {
-        await deleteContact(editing.id);
+        await deleteContact(editing.id, deviceKey);
       }
       await createContact(
         { name, relation, phone, is_primary: form.is_primary },
@@ -165,7 +165,7 @@ export default function SosPage() {
     const target = pendingDelete;
     setPendingDelete(null);
     try {
-      await deleteContact(target.id);
+      await deleteContact(target.id, deviceKey);
       toast.success('联系人已删除');
       await load(false);
     } catch {

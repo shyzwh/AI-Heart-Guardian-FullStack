@@ -101,7 +101,7 @@ export default function CheckInPage() {
     }
     setSubmitting(true);
     try {
-      await createCheckIn({
+      const created = await createCheckIn({
         patient_id: profile.id,
         symptom_tags: tags,
         symptoms: symptoms.trim(),
@@ -110,10 +110,20 @@ export default function CheckInPage() {
         mood,
         note: note.trim(),
       });
-      toast.success(todayRecord ? '今日打卡已更新' : '打卡成功');
-      const list = await listCheckIns(profile.id);
-      setRecords(list);
-      setLastSavedDate(todayStr());
+      setRecords((previous) =>
+        [
+          created,
+          ...previous.filter((record) => record.checkin_date !== created.checkin_date),
+        ]
+          .sort((a, b) => b.checkin_date.localeCompare(a.checkin_date))
+          .slice(0, 90),
+      );
+      toast.success(
+        todayRecord
+          ? '今日打卡已更新，今天也要好好爱护心脏哦~'
+          : '打卡成功！今天也要好好爱护心脏哦~',
+      );
+      setLastSavedDate(created.checkin_date);
     } catch (err) {
       toast.error(extractError(err, '提交失败，请稍后重试'));
     } finally {

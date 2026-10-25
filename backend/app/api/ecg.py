@@ -37,6 +37,8 @@ def _check_patient_access(db: Session, patient_id: int, user: User) -> Patient:
         raise HTTPException(status_code=403, detail="无权为该患者发起分析")
     if user.role == "patient" and patient.user_id != user.id:
         raise HTTPException(status_code=403, detail="无权访问该患者数据")
+    if user.role not in {"doctor", "patient"}:
+        raise HTTPException(status_code=403, detail="无权访问该患者数据")
     return patient
 
 
@@ -147,15 +149,19 @@ def analyze(
 def _scope_records(stmt, user: User, patient_id: int | None):
     """按角色收敛数据可见范围。"""
     if user.role == "doctor":
-        stmt = stmt.where(EcgRecord.doctor_id == user.id)
+        stmt = stmt.join(Patient, EcgRecord.patient_id == Patient.id).where(
+            Patient.doctor_id == user.id
+        )
         if patient_id is not None:
             stmt = stmt.where(EcgRecord.patient_id == patient_id)
-    else:  # patient：仅能看自己档案下的记录
+    elif user.role == "patient":
         stmt = stmt.join(Patient, EcgRecord.patient_id == Patient.id).where(
             Patient.user_id == user.id
         )
         if patient_id is not None:
             stmt = stmt.where(EcgRecord.patient_id == patient_id)
+    else:
+        raise HTTPException(status_code=403, detail="无权访问心电记录")
     return stmt
 
 
@@ -168,6 +174,8 @@ def list_records(
     db: Session = Depends(get_db),
     current: User = Depends(get_current_user),
 ) -> list[EcgRecord]:
+    if patient_id is not None:
+        _check_patient_access(db, patient_id, current)
     stmt = select(EcgRecord)
     stmt = _scope_records(stmt, current, patient_id)
     if risk:
@@ -223,8 +231,7 @@ def delete_record(
     record = db.get(EcgRecord, record_pk)
     if record is None:
         raise HTTPException(status_code=404, detail="记录不存在")
-    if record.doctor_id != doctor.id:
-        raise HTTPException(status_code=403, detail="无权删除该记录")
+    _check_patient_access(db, record.patient_id, doctor)
     # 同时清理波形文件
     if record.waveform_path and os.path.exists(record.waveform_path):
         try:

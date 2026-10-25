@@ -7,6 +7,10 @@ import uuid
 from pathlib import Path
 
 import pytest
+from sqlalchemy import select
+
+from app.models.ecg_record import EcgRecord
+from app.models.notification import Notification
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SAMPLE_CSV = PROJECT_ROOT / "uploads" / "100_30s.csv"
@@ -107,6 +111,126 @@ def test_checkin_requires_auth(client):
     assert client.post("/api/v1/checkins", json={"patient_id": 1}).status_code == 401
 
 
+def test_patient_resources_are_scoped_to_owner(client, db):
+    doctor_a = _signup(client, "doctor", "doc_scope_a")
+    doctor_b = _signup(client, "doctor", "doc_scope_b")
+    patient_a = _signup(client, "patient", "pat_scope_a")
+    patient_b = _signup(client, "patient", "pat_scope_b")
+    patient_id_a = _bound_patient(client, doctor_a, patient_a)
+    patient_id_b = _bound_patient(client, doctor_b, patient_b)
+    doctor_id_a = client.get("/api/v1/auth/me", headers=doctor_a).json()["id"]
+
+    assert client.get(f"/api/v1/patients/{patient_id_b}", headers=doctor_a).status_code == 403
+    assert client.get(f"/api/v1/patients/{patient_id_b}", headers=patient_a).status_code == 403
+    assert client.put(
+        f"/api/v1/patients/{patient_id_b}",
+        json={"note": "越权修改"},
+        headers=doctor_a,
+    ).status_code == 403
+
+    checkin = {
+        "patient_id": patient_id_a,
+        "symptoms": "胸闷",
+        "symptom_tags": ["胸闷"],
+        "heart_rate": 80,
+    }
+    assert client.post("/api/v1/checkins", json=checkin, headers=patient_a).status_code == 201
+    assert client.get(
+        f"/api/v1/checkins/{patient_id_b}", headers=patient_a
+    ).status_code == 403
+    checkin["patient_id"] = patient_id_b
+    assert client.post("/api/v1/checkins", json=checkin, headers=doctor_a).status_code == 403
+
+    assert client.post(
+        "/api/v1/rehab/generate", json={"patient_id": patient_id_a}, headers=doctor_a
+    ).status_code == 201
+    assert client.get(f"/api/v1/rehab/{patient_id_b}", headers=doctor_a).status_code == 403
+
+    followup = client.post(
+        "/api/v1/followups",
+        json={"patient_id": patient_id_a, "content": "复查"},
+        headers=doctor_a,
+    )
+    assert followup.status_code == 201, followup.text
+    followup_id = followup.json()["id"]
+    assert client.get(
+        f"/api/v1/followups?patient_id={patient_id_b}", headers=doctor_a
+    ).status_code == 403
+    assert client.patch(
+        f"/api/v1/followups/{followup_id}/done",
+        json={"result": "完成"},
+        headers=doctor_b,
+    ).status_code == 403
+
+    db.add(
+        EcgRecord(
+            record_id=uuid.uuid4().hex,
+            patient_id=patient_id_a,
+            doctor_id=doctor_id_a,
+            report_text="私有报告",
+        )
+    )
+    db.commit()
+    record = db.scalar(
+        select(EcgRecord).where(
+            EcgRecord.patient_id == patient_id_a,
+            EcgRecord.doctor_id == doctor_id_a,
+        )
+    )
+    assert record is not None
+    assert client.get(
+        f"/api/v1/ecg?patient_id={patient_id_b}", headers=doctor_a
+    ).status_code == 403
+    assert client.get(f"/api/v1/ecg/{record.id}", headers=doctor_b).status_code == 403
+    assert client.get(f"/api/v1/ecg/{record.id}/waveform", headers=patient_b).status_code == 403
+    assert client.get(f"/api/v1/reports/{record.id}", headers=patient_b).status_code == 403
+    assert client.get(
+        f"/api/v1/ecg/{record.id}/shap/decision", headers=patient_b
+    ).status_code == 403
+
+    consultation = client.post(
+        "/api/v1/consultations",
+        json={"patient_id": patient_id_a},
+        headers=doctor_a,
+    )
+    assert consultation.status_code == 201, consultation.text
+    consultation_id = consultation.json()["id"]
+    assert client.get(
+        f"/api/v1/consultations/{consultation_id}/messages", headers=doctor_b
+    ).status_code == 403
+    assert all(
+        item["id"] != consultation_id
+        for item in client.get("/api/v1/consultations", headers=doctor_b).json()
+    )
+
+    notification = Notification(
+        recipient_id=doctor_id_a,
+        title="私有提醒",
+        content="不可越权读取",
+        notification_type="risk_alert",
+    )
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+    assert client.patch(
+        f"/api/v1/notifications/{notification.id}/read", headers=doctor_b
+    ).status_code == 403
+
+    assert client.post(
+        "/api/v1/emergency-contacts",
+        json={"name": "不应创建", "phone": "13900000000", "patient_id": patient_id_a},
+    ).status_code == 403
+    assert client.post(
+        "/api/v1/emergency/sos",
+        json={"patient_id": patient_id_a},
+    ).status_code == 403
+    assert client.post(
+        "/api/v1/emergency/sos",
+        json={"patient_id": patient_id_a},
+        headers=patient_b,
+    ).status_code == 403
+
+
 # ------------------------------------------------------- 康复方案
 
 @pytest.mark.skipif(not SAMPLE_CSV.exists(), reason="缺少测试样本")
@@ -165,7 +289,11 @@ def test_followup_doctor_only(client):
     assert r.status_code == 200 and all(x["patient_id"] == pid for x in r.json())
 
     # 完成
-    r = client.patch(f"/api/v1/followups/{fid}/done", headers=doc_h)
+    r = client.patch(
+        f"/api/v1/followups/{fid}/done",
+        json={"result": "已完成"},
+        headers=doc_h,
+    )
     assert r.status_code == 200 and r.json()["status"] == "done"
 
 

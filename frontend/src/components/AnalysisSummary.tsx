@@ -35,6 +35,7 @@ export function AnalysisSummary({ record }: AnalysisSummaryProps) {
   const probs = record.risk_probs ?? [];
   const probLabels = ['低危', '中危', '高危'];
   const features = record.features ?? {};
+  const cnnSucceeded = record.cnn_status === 'success' || record.cnn_status === 'ok';
 
   return (
     <div className="space-y-4">
@@ -69,7 +70,14 @@ export function AnalysisSummary({ record }: AnalysisSummaryProps) {
             <StatTile
               icon={Cpu}
               label="CNN 状态"
-              value={record.cnn_status === 'ok' ? '已判读' : record.cnn_status || '未启用'}
+              value={cnnSucceeded ? 'success' : record.cnn_status || '未启用'}
+              tone={
+                cnnSucceeded
+                  ? 'text-primary'
+                  : record.cnn_status === 'error'
+                    ? 'text-destructive'
+                    : undefined
+              }
             />
           </div>
 

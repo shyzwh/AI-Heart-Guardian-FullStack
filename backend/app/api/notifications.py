@@ -52,8 +52,10 @@ def mark_notification_read(
     current: User = Depends(get_current_user),
 ) -> dict[str, bool]:
     notification = db.get(Notification, notification_id)
-    if notification is None or notification.recipient_id != current.id:
+    if notification is None:
         raise HTTPException(status_code=404, detail="消息不存在")
+    if notification.recipient_id != current.id:
+        raise HTTPException(status_code=403, detail="无权访问该消息")
     if not notification.is_read:
         notification.is_read = True
         db.commit()

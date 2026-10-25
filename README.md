@@ -225,7 +225,7 @@ CNN 输入为以 R 峰为中心切分的固定长度心拍，默认使用 R 峰�
 
 模型结构包含多层 `Conv1D`、`MaxPooling1D`、`GlobalAveragePooling1D`、全连接层和 Sigmoid 输出层。模型保存为：
 
-`cnn_model_path` 默认为空，旧版 Streamlit 可在配置中填写。FastAPI 后端通过 `CNN_MODEL_PATH` 环境变量指定 CNN 模型文件，未设置时不预置模型路径。
+旧版 Streamlit 可通过 `config.json` 中的 `cnn_model_path` 指定模型。FastAPI 后端默认加载项目根目录下的 `models/cnn_model.h5`；如需覆盖，可设置 `CNN_MODEL_PATH` 环境变量为模型文件路径。
 
 ## 部署方式
 

@@ -57,6 +57,8 @@ def _get_patient_or_403(db: Session, patient_id: int, user: User) -> Patient:
         raise HTTPException(status_code=403, detail="无权访问该患者")
     if user.role == "patient" and patient.user_id != user.id:
         raise HTTPException(status_code=403, detail="无权访问该档案")
+    if user.role not in {"doctor", "patient"}:
+        raise HTTPException(status_code=403, detail="无权访问该档案")
     return patient
 
 
@@ -75,10 +77,12 @@ def list_contacts(
         stmt = stmt.where(
             (EmergencyContact.patient_id == pid) | (EmergencyContact.device_key == device_key)
         )
-    else:
+    elif current is None or current.role == "doctor":
         if not device_key:
             return []
         stmt = stmt.where(EmergencyContact.device_key == device_key)
+    else:
+        raise HTTPException(status_code=403, detail="无权访问紧急联系人")
     return list(db.scalars(stmt.order_by(EmergencyContact.is_primary.desc(), EmergencyContact.id)).all())
 
 
@@ -95,9 +99,16 @@ def create_contact(
     if current is not None:
         if current.role == "patient":
             patient = _resolve_patient_for_user(db, current)
-            patient_id = patient.id if patient else payload.patient_id
-        elif current.role == "doctor" and payload.patient_id is not None:
-            _get_patient_or_403(db, payload.patient_id, current)
+            if patient is None:
+                raise HTTPException(status_code=403, detail="患者账号尚未绑定健康档案")
+            patient_id = patient.id
+        elif current.role == "doctor":
+            if payload.patient_id is not None:
+                _get_patient_or_403(db, payload.patient_id, current)
+        else:
+            raise HTTPException(status_code=403, detail="无权管理紧急联系人")
+    elif payload.patient_id is not None:
+        raise HTTPException(status_code=403, detail="未登录状态不能操作患者档案联系人")
     if not patient_id and not resolved_device:
         raise HTTPException(status_code=400, detail="未登录状态需提供设备标识 device_key")
 
@@ -132,21 +143,29 @@ def _clear_primary(db: Session, patient_id: int | None, device_key: str) -> None
 @router.delete("/emergency-contacts/{contact_id}", status_code=204)
 def delete_contact(
     contact_id: int,
+    device_key: str = "",
     db: Session = Depends(get_db),
     current: User | None = Depends(get_current_user_optional),
 ) -> None:
     contact = db.get(EmergencyContact, contact_id)
     if contact is None:
         raise HTTPException(status_code=404, detail="联系人不存在")
-    # 登录患者只能删自己的；未登录（匿名）允许按记录删除（设备本地管理）
-    if current is not None and current.role == "patient":
-        patient = _resolve_patient_for_user(db, current)
-        if patient is None or contact.patient_id != patient.id:
+    if current is None:
+        if contact.patient_id is not None or not device_key or contact.device_key != device_key:
             raise HTTPException(status_code=403, detail="无权删除该联系人")
-    if current is not None and current.role == "doctor":
+    elif current.role == "patient":
+        patient = _resolve_patient_for_user(db, current)
+        if patient is None or (
+            contact.patient_id != patient.id
+            and (contact.patient_id is not None or contact.device_key != device_key)
+        ):
+            raise HTTPException(status_code=403, detail="无权删除该联系人")
+    elif current.role == "doctor":
         if contact.patient_id is None:
             raise HTTPException(status_code=403, detail="无权删除该联系人")
         _get_patient_or_403(db, contact.patient_id, current)
+    else:
+        raise HTTPException(status_code=403, detail="无权删除该联系人")
     db.delete(contact)
     db.commit()
 
@@ -161,9 +180,13 @@ def sos(
     contacts: list[EmergencyContact] = []
     patient_id = payload.patient_id
 
-    if current is not None and current.role == "patient":
-        patient = _resolve_patient_for_user(db, current)
-        if patient:
+    if current is not None:
+        if current.role == "patient":
+            patient = _resolve_patient_for_user(db, current)
+            if patient is None:
+                raise HTTPException(status_code=403, detail="患者账号尚未绑定健康档案")
+            if payload.patient_id is not None and payload.patient_id != patient.id:
+                raise HTTPException(status_code=403, detail="无权访问该患者联系人")
             patient_id = patient.id
             contacts = list(
                 db.scalars(
@@ -172,6 +195,20 @@ def sos(
                     .order_by(EmergencyContact.is_primary.desc(), EmergencyContact.id)
                 ).all()
             )
+        elif current.role == "doctor":
+            if patient_id is not None:
+                _get_patient_or_403(db, patient_id, current)
+                contacts = list(
+                    db.scalars(
+                        select(EmergencyContact)
+                        .where(EmergencyContact.patient_id == patient_id)
+                        .order_by(EmergencyContact.is_primary.desc(), EmergencyContact.id)
+                    ).all()
+                )
+        else:
+            raise HTTPException(status_code=403, detail="无权访问紧急联系人")
+    elif patient_id is not None:
+        raise HTTPException(status_code=403, detail="未登录状态不能访问患者联系人")
     if not contacts and patient_id is not None:
         contacts = list(
             db.scalars(
@@ -180,7 +217,11 @@ def sos(
                 .order_by(EmergencyContact.is_primary.desc(), EmergencyContact.id)
             ).all()
         )
-    if not contacts and payload.device_key:
+    if not contacts and payload.device_key and (
+        current is None
+        or (current.role == "patient" and patient_id is not None)
+        or (current.role == "doctor" and patient_id is None)
+    ):
         contacts = list(
             db.scalars(
                 select(EmergencyContact)
@@ -280,8 +321,10 @@ def generate_rehab(
     record = None
     if payload.ecg_record_id is not None:
         record = db.get(EcgRecord, payload.ecg_record_id)
-        if record is None or record.patient_id != patient.id:
-            raise HTTPException(status_code=404, detail="心电记录不存在或不属于该患者")
+        if record is None:
+            raise HTTPException(status_code=404, detail="心电记录不存在")
+        if record.patient_id != patient.id:
+            raise HTTPException(status_code=403, detail="无权使用其他患者的心电记录")
     else:
         record = db.scalar(
             select(EcgRecord)
@@ -328,12 +371,19 @@ def list_followups(
     current: User = Depends(get_current_user),
 ) -> list[FollowUp]:
     stmt = select(FollowUp)
+    if patient_id is not None:
+        _get_patient_or_403(db, patient_id, current)
     if current.role == "doctor":
-        stmt = stmt.where(FollowUp.doctor_id == current.id)
-    else:
+        stmt = stmt.join(Patient, FollowUp.patient_id == Patient.id).where(
+            FollowUp.doctor_id == current.id,
+            Patient.doctor_id == current.id,
+        )
+    elif current.role == "patient":
         patient = _resolve_patient_for_user(db, current)
         pid = patient.id if patient else -1
         stmt = stmt.where(FollowUp.patient_id == pid)
+    else:
+        raise HTTPException(status_code=403, detail="无权查看随访")
     if patient_id is not None:
         stmt = stmt.where(FollowUp.patient_id == patient_id)
     if status_filter:
@@ -350,6 +400,12 @@ def create_followup(
     doctor: User = Depends(require_roles("doctor")),
 ) -> FollowUp:
     patient = _get_patient_or_403(db, payload.patient_id, doctor)
+    if payload.ecg_record_id is not None:
+        record = db.get(EcgRecord, payload.ecg_record_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="心电记录不存在")
+        if record.patient_id != patient.id:
+            raise HTTPException(status_code=403, detail="无权关联其他患者的心电记录")
     followup = FollowUp(
         patient_id=payload.patient_id,
         doctor_id=doctor.id,
@@ -381,8 +437,11 @@ def complete_followup(
     doctor: User = Depends(require_roles("doctor")),
 ) -> FollowUp:
     followup = db.get(FollowUp, followup_id)
-    if followup is None or followup.doctor_id != doctor.id:
-        raise HTTPException(status_code=404, detail="随访不存在或无权操作")
+    if followup is None:
+        raise HTTPException(status_code=404, detail="随访不存在")
+    if followup.doctor_id != doctor.id:
+        raise HTTPException(status_code=403, detail="无权操作该随访")
+    _get_patient_or_403(db, followup.patient_id, doctor)
     followup.status = "done"
     followup.result = payload.result.strip()
     followup.completed_at = dt.datetime.now()

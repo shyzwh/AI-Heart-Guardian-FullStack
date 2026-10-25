@@ -48,8 +48,10 @@ def _serialize(patient: Patient) -> PatientOut:
 
 def _get_owned_patient(db: Session, patient_id: int, doctor_id: int) -> Patient:
     patient = db.get(Patient, patient_id)
-    if patient is None or patient.doctor_id != doctor_id:
-        raise HTTPException(status_code=404, detail="患者档案不存在或无权访问")
+    if patient is None:
+        raise HTTPException(status_code=404, detail="患者档案不存在")
+    if patient.doctor_id != doctor_id:
+        raise HTTPException(status_code=403, detail="无权访问该患者档案")
     return patient
 
 
@@ -133,6 +135,8 @@ def get_patient(
     if current.role == "doctor" and patient.doctor_id != current.id:
         raise HTTPException(status_code=403, detail="无权访问该档案")
     if current.role == "patient" and patient.user_id != current.id:
+        raise HTTPException(status_code=403, detail="无权访问该档案")
+    if current.role not in {"doctor", "patient"}:
         raise HTTPException(status_code=403, detail="无权访问该档案")
     return _serialize(patient)
 

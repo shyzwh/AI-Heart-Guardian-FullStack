@@ -62,3 +62,18 @@ pnpm-lock.yaml
 
 # Agent files
 .agent/
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+backend/.env
+
+# 数据库与本地文件
+*.db
+*.sqlite3
+backend/storage/
+
+# 超大模型文件（如果超过100M，Gitee会报错，建议排除）
+# models/*.h5 

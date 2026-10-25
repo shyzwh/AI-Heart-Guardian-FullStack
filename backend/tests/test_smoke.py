@@ -143,6 +143,9 @@ def test_ecg_full_pipeline(client):
     assert record["risk_level"] in {"低危", "中危", "高危"}
     assert record["patient_id"] == pid
     assert record["symptoms"] == "偶发心悸"
+    assert record["cnn_status"] == "success"
+    assert isinstance(record["abnormal_positions"], list)
+    assert record["abnormal_beats"] == len(record["abnormal_positions"])
     rec_pk = record["id"]
 
     # 列表
@@ -160,6 +163,7 @@ def test_ecg_full_pipeline(client):
     wf = r.json()
     assert "signal" in wf and "r_peaks" in wf
     assert len(wf["signal"]) > 0
+    assert all(0 <= position < len(wf["signal"]) for position in wf["abnormal_positions"])
 
 
 def test_ecg_requires_auth(client):

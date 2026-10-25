@@ -434,7 +434,7 @@ CNN 分支从 R 峰位置并行展开：
 | `risk_threshold_high` | `0.7` | 高危阈值，通常为 0 到 1 的数值，建议大于中危阈值 |
 | `default_duration_sec` | `30` | 默认分析时长，单位秒；当前主流程未完全使用 |
 | `model_path` | `models/ecg_risk_xgb_model.json` | XGBoost 模型路径 |
-| `cnn_model_path` | `""` | 未配置 CNN 模型路径 |
+| `cnn_model_path` | `""` | 旧版 Streamlit 配置；FastAPI 默认加载 `models/cnn_model.h5`，也可通过 `CNN_MODEL_PATH` 覆盖 |
 | `scaler_path` | `models/ecg_scaler.pkl` | 特征标准化器路径 |
 | `data_dir` | `data/mitbih/mit-bih-arrhythmia-database-1.0.0` | MIT-BIH 数据目录 |
 | `cnn_beats_path` | `cnn_beats.npy` | 基础 CNN 心拍数据路径 |

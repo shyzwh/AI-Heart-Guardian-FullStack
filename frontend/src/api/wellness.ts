@@ -31,8 +31,10 @@ export async function createContact(
   return resp.data;
 }
 
-export async function deleteContact(id: number): Promise<void> {
-  await http.delete(`/emergency-contacts/${id}`);
+export async function deleteContact(id: number, deviceKey?: string): Promise<void> {
+  await http.delete(`/emergency-contacts/${id}`, {
+    params: deviceKey ? { device_key: deviceKey } : undefined,
+  });
 }
 
 export interface ISosResult {

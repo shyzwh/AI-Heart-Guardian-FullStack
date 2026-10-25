@@ -35,7 +35,12 @@ def _get_accessible_consultation(db: Session, consultation_id: int, user: User) 
     if consultation is None:
         raise HTTPException(status_code=404, detail="咨询会话不存在")
     if user.role == "doctor":
-        if consultation.doctor_id != user.id:
+        patient = db.get(Patient, consultation.patient_id)
+        if (
+            consultation.doctor_id != user.id
+            or patient is None
+            or patient.doctor_id != user.id
+        ):
             raise HTTPException(status_code=403, detail="无权访问该咨询会话")
     elif user.role == "patient":
         patient = db.get(Patient, consultation.patient_id)
@@ -117,8 +122,10 @@ def create_consultation(
         if patient_id is None:
             raise HTTPException(status_code=422, detail="医生创建会话时必须指定患者档案")
         patient = db.get(Patient, patient_id)
-        if patient is None or patient.doctor_id != current.id:
-            raise HTTPException(status_code=404, detail="患者档案不存在或无权访问")
+        if patient is None:
+            raise HTTPException(status_code=404, detail="患者档案不存在")
+        if patient.doctor_id != current.id:
+            raise HTTPException(status_code=403, detail="无权访问该患者档案")
         if patient.user_id is None:
             raise HTTPException(status_code=400, detail="该患者尚未绑定登录账号")
     else:
@@ -157,7 +164,10 @@ def list_consultations(
 ) -> list[dict[str, object]]:
     statement = select(Consultation)
     if current.role == "doctor":
-        statement = statement.where(Consultation.doctor_id == current.id)
+        statement = statement.join(Patient, Consultation.patient_id == Patient.id).where(
+            Consultation.doctor_id == current.id,
+            Patient.doctor_id == current.id,
+        )
     elif current.role == "patient":
         statement = statement.join(Patient, Consultation.patient_id == Patient.id).where(
             Patient.user_id == current.id
@@ -268,11 +278,11 @@ def get_message_image(
 ) -> FileResponse:
     consultation = _get_accessible_consultation(db, consultation_id, current)
     message = db.get(ConsultationMessage, message_id)
-    if (
-        message is None
-        or message.consultation_id != consultation.id
-        or message.image_filename is None
-    ):
+    if message is None:
+        raise HTTPException(status_code=404, detail="图片不存在")
+    if message.consultation_id != consultation.id:
+        raise HTTPException(status_code=403, detail="无权访问该图片")
+    if message.image_filename is None:
         raise HTTPException(status_code=404, detail="图片不存在")
     image_path = Path(settings.UPLOAD_DIR / "consultations" / message.image_filename)
     if not image_path.is_file():
