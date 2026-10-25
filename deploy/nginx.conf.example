@@ -1,5 +1,5 @@
 # =====================================================================
-# AI护心镜 智慧康养心电风险筛查平台 —— Nginx 反向代理示例配置
+# AI护心镜 全龄心电风险与医患协同平台 —— Nginx 反向代理示例配置
 # 适用：前端静态文件由 Nginx 直接托管，/api 与 /docs 反代到 FastAPI(Uvicorn)
 # 部署：将本文件放到 Nginx 的 conf/conf.d/ 或 include 进 nginx.conf，
 #       并把下方 __FRONTEND_DIST__、server_name 改成实际值后重载 nginx。

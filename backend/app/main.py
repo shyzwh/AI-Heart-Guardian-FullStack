@@ -38,7 +38,7 @@ from app.api import (  # noqa: E402
 from app.db.database import init_db  # noqa: E402
 
 app = FastAPI(
-    title="AI护心镜——智慧康养心电风险筛查平台 API",
+    title="AI护心镜——全龄心电风险与医患协同平台 API",
     version="0.1.0",
     description="双通路心电风险筛查 + 康养健康管理后端",
 )

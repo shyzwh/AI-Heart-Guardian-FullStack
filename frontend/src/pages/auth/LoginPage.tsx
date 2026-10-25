@@ -122,7 +122,7 @@ export default function LoginPage() {
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight">AI护心镜</h1>
           <p className="mt-4 max-w-lg text-base leading-7 text-white/85">
-            智慧康养心电风险筛查平台，提供心电风险筛查与医患管理服务。
+            全龄心电风险与医患协同平台，提供心电风险筛查与医患管理服务。
           </p>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function LoginPage() {
             AI护心镜
           </h1>
           <p className="mt-1 text-sm text-muted-foreground lg:hidden">
-            智慧康养心电风险筛查平台
+            全龄心电风险与医患协同平台
           </p>
         </div>
 
